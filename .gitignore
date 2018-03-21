@@ -1,0 +1,8 @@
+*
+!*/
+!*.*
+!Makefile
+*.bin
+*.out
+*.o
+.DS_Store
