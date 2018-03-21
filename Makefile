@@ -7,10 +7,10 @@ OBJ_CLIENT=$(subst .cc,.o,$(SRC_CLIENT))
 
 all: server client
 
-server: $(OBJ_SERVER)
+server: $(OBJ_SERVER) src/server/server.h
 	$(CXX) -o server $(OBJ_SERVER)
 
-client: $(OBJS_CLIENT)
+client: $(OBJS_CLIENT) src/server/client.h
 	$(CXX) -o client $(OBJS_CLIENT)
 
 %.o: %.cc
