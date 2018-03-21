@@ -1,4 +1,5 @@
 CXX=g++
+CFLAGS=-std=c++11
 BIN=bin
 SRC_SERVER=$(shell find ./src/server -name "*.cc")
 SRC_CLIENT=$(shell find ./src/client -name "*.cc")
@@ -8,10 +9,10 @@ OBJ_CLIENT=$(subst .cc,.o,$(SRC_CLIENT))
 all: server client
 
 server: $(OBJ_SERVER) src/server/server.h
-	$(CXX) -o server $(OBJ_SERVER)
+	$(CXX) $(CFLAGS) -o server $(OBJ_SERVER)
 
 client: $(OBJS_CLIENT) src/server/client.h
-	$(CXX) -o client $(OBJS_CLIENT)
+	$(CXX) $(CFLAGS) -o client $(OBJS_CLIENT)
 
 %.o: %.cc
 	$(CXX) -c -o $@ $<
