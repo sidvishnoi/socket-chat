@@ -1,6 +1,6 @@
 *.out
 *.o
 *.gch
-server
-client
+/server
+/client
 .DS_Store
