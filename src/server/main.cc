@@ -4,7 +4,7 @@
  *  $ ./server [PORT=8000] [BACKLOG=5]
  */
 
-#include "server.h"
+#include "./server.h"
 
 int main(int argc, char *argv[]) {
   const int port = (argc > 1) ? std::atoi(argv[1]) : 8000;
@@ -15,5 +15,6 @@ int main(int argc, char *argv[]) {
   Listen(sockfd, backlog);
   Accept(sockfd);
 
+  close(sockfd);
   return errno;
 }
