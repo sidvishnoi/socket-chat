@@ -1,8 +1,14 @@
-#include "server.h"
+#include "./server.h"
 
 void Bind(int sockfd, int port) {
   struct sockaddr_in server_addr;
   bzero((char*)&server_addr, sizeof server_addr);
+
+  const int reuse = 1;
+  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) < 0) {
+    throw std::runtime_error("setsockopt(SO_REUSEADDR) failed");
+  }
+
   server_addr.sin_family = AF_INET;
   server_addr.sin_addr.s_addr = INADDR_ANY;
   server_addr.sin_port = htons(port);
