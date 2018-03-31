@@ -1,4 +1,4 @@
-#include "server.h"
+#include "./server.h"
 
 void printError() {
   cout << "[ERROR]: ";

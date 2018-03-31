@@ -1,5 +1,5 @@
-#ifndef SERVER
-#define SERVER
+#ifndef SRC_SERVER_SERVER_H_
+#define SRC_SERVER_SERVER_H_
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -20,4 +20,4 @@ void Bind(int sockfd, int port);
 void Listen(int sockfd, int backlog);
 int Accept(int sockfd);
 
-#endif
+#endif  // SRC_SERVER_SERVER_H_
