@@ -11,6 +11,7 @@ class User {
   std::string host;
   int port;
   int sockfd;
+  const int maxLength = 128;
 
  public:
   User(const std::string &serializedString);

@@ -24,11 +24,14 @@ User::User(const std::string& str) {
 
 std::string User::serialize() {
   std::string s;
-  s.reserve(128);
+  s.reserve(maxLength);
   s += "name:" + username + ",";
   s += "pass:" + password + ",";
   s += "fd:" + std::to_string(sockfd) + ",";
   s += "host:" + host + ",";
   s += "port:" + std::to_string(port);
+  if (s.size() > maxLength) {
+    throw std::length_error("Cannot serialize");
+  }
   return s;
 }
