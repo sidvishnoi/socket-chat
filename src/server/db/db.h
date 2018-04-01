@@ -40,18 +40,25 @@ class User {
   void setSockfd(const int newSock) { sockfd = newSock; }
 };
 
+enum statusCode {
+  SUCCESS,
+  WARNING,
+  FAILED
+};
+
+template <class T>
 class Database {
  public:
   explicit Database(std::string dir): dbDir(dir) {}
 
-  bool addEntry(User);
-  User getUserByHost(const std::string &host) const;
-  User getUserByName(const std::string &name) const;
-  int updateState(User&);
+  statusCode add(T&);
+  T get(const std::string& key, const std::string &value) const;
+  statusCode update(T &oldUser, T &newUser);
+  statusCode remove(T &);
 
  private:
   std::string dbDir;
-  int splitLen = 2;
+  const int hashLength = 2;
 };
 
 #endif  //  SRC_SERVER_DB_DB_H_
