@@ -8,14 +8,14 @@ OBJ_CLIENT=$(subst .cc,.o,$(SRC_CLIENT))
 
 all: server client
 
-server: $(OBJ_SERVER) src/server/server.h
+server: $(OBJ_SERVER) src/server/server.h src/server/db/db.h
 	$(CXX) $(CFLAGS) -o server $(OBJ_SERVER)
 
 client: $(OBJS_CLIENT) src/client/client.h
 	$(CXX) $(CFLAGS) -o client $(OBJS_CLIENT)
 
 %.o: %.cc
-	$(CXX) -c -o $@ $<
+	$(CXX) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -rf $(shell find . -name "*.o")
