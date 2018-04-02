@@ -2,7 +2,7 @@
 #define SRC_SERVER_USER_H_
 
 #include <string>
-#include "./db/entry/entry.h"
+#include "./entry/entry.h"
 
 class User : public Entry {
   static const size_t _sz = 128;
