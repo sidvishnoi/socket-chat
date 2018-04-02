@@ -8,7 +8,7 @@ OBJ_CLIENT=$(subst .cc,.o,$(SRC_CLIENT))
 
 all: server client
 
-server: $(OBJ_SERVER) src/server/server.h src/server/db/database.h
+server: $(OBJ_SERVER) src/server/server.h src/db/database.h
 	$(CXX) $(CFLAGS) -o server $(OBJ_SERVER)
 
 client: $(OBJS_CLIENT) src/client/client.h
