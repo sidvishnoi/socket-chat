@@ -11,8 +11,8 @@ all: server client
 server: $(OBJ_SERVER) src/server/server.h
 	$(CXX) $(CFLAGS) -o server $(OBJ_SERVER)
 
-client: $(OBJS_CLIENT) src/client/client.h
-	$(CXX) $(CFLAGS) -o client $(OBJS_CLIENT)
+client: $(OBJ_CLIENT) src/client/client.h
+	$(CXX) $(CFLAGS) -o client $(OBJ_CLIENT)
 
 %.o: %.cc
 	$(CXX) -c -o $@ $<
