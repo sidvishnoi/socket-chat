@@ -14,16 +14,24 @@ class Entry {
  public:
   using Map = std::map<std::string, std::string>;
   using Keys = std::vector<std::string>;
-  explicit Entry(size_t maxLen) : sz(maxLen) {}
-  Entry(size_t maxLen, const Keys &keys);
-  Entry(size_t maxLen, const std::string& str);
-  Entry(const Entry &other);
+  using Values = std::vector<std::string>;
 
+  Entry(size_t _sz) : sz(_sz) {}               // used with "insert()"
+  Entry(size_t _sz, const Keys &keys);         // empty object. use with "set()"
+  Entry(size_t _sz, const std::string& str);   // deserialize
+  Entry(const Entry &other);                   // copy constructor
+
+  // add a new key-value pair
   void insert(const std::string &key, const std::string &value);
+  // set an existing key to a new value
   bool set(const std::string &key, const std::string &value);
+  // get value correspondoing to a key
   std::string get(const std::string &key) const;
+  // get entire public key-value pairs
   Map get() const;
+  // covert the object to `key:value,` string
   std::string serialize() const;
+  // return the max size of serialisable string
   size_t size() { return sz; }
 
  private:
