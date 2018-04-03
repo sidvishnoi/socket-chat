@@ -1,5 +1,5 @@
-#ifndef SRC_SERVER_DB_ENTRY_ENTRY_H_
-#define SRC_SERVER_DB_ENTRY_ENTRY_H_
+#ifndef SRC_DB_ENTRY_ENTRY_H_
+#define SRC_DB_ENTRY_ENTRY_H_
 
 #include <map>
 #include <vector>
@@ -7,8 +7,6 @@
 #include <sstream>
 #include <algorithm>
 #include <stdexcept>
-#include <iostream>
-using std::cout; using std::endl;
 
 class Entry {
  public:
@@ -16,7 +14,7 @@ class Entry {
   using Keys = std::vector<std::string>;
   using Values = std::vector<std::string>;
 
-  Entry(size_t _sz) : sz(_sz) {}               // used with "insert()"
+  explicit Entry(size_t _sz) : sz(_sz) {}               // used with "insert()"
   Entry(size_t _sz, const Keys &keys);         // empty object. use with "set()"
   Entry(size_t _sz, const std::string& str);   // deserialize
   Entry(const Entry &other);                   // copy constructor
@@ -29,7 +27,7 @@ class Entry {
   std::string get(const std::string &key) const;
   // get entire public key-value pairs
   Map get() const;
-  // covert the object to `key:value,` string
+  // convert the object to `key:value,` string
   std::string serialize() const;
   // return the max size of serialisable string
   size_t size() { return sz; }
@@ -39,4 +37,4 @@ class Entry {
   Map m;
 };
 
-#endif  // SRC_SERVER_DB_ENTRY_ENTRY_H_
+#endif  // SRC_DB_ENTRY_ENTRY_H_

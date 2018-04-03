@@ -15,15 +15,17 @@ class User : public Entry {
   User() : Entry(_sz, _keys) {}
 
   // order of values must be same as keys.
-  User(const Entry::Values &values);
+  explicit User(const Entry::Values &values);
 
   // de-serialize
-  User(const std::string &str) : Entry(_sz, str) {}
+  explicit User(const std::string &str) : Entry(_sz, str) {}
 };
 
 User::User(const Entry::Values &values) : Entry(_sz) {
   if (values.size() != _keys.size()) {
-    throw std::invalid_argument("Failed to create instance of `User(Values values)` : size of keys must be same as size of values");
+    throw std::invalid_argument(
+      "Failed to create instance of `User(Values values)`"
+      ": size of keys must be same as size of values");
   }
   for (size_t k = 0; k < _keys.size(); ++k) {
     insert(_keys[k], values[k]);
