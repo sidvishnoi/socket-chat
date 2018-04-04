@@ -2,6 +2,6 @@
 
 (Done as a part of extended class assignments)
 
-See the [`Python`](https://github.com/sidvishnoi/chat-server/tree/python) branch
+See the [`Python`](python) branch
 
 See the [`C++`](https://github.com/sidvishnoi/chat-server/tree/cpp) branch
