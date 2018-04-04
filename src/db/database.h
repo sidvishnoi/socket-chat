@@ -7,7 +7,6 @@
 #include <stdexcept>
 
 int getNumberOfLines(std::fstream &file, size_t lineLength);
-bool createFileIfNotExists(const std::string &fileName);
 
 template <class T>
 class Database {
@@ -15,11 +14,7 @@ class Database {
   explicit Database(const std::string &dir, const std::string &_pk)
     : pk(_pk), dbDir(dir) {
     if (dbDir.back() != '/') dbDir.append("/");
-    std::string cmd("mkdir -p " + dbDir);
-    const int st = system(cmd.c_str());
-    if (st > 1) {
-      throw std::runtime_error("Failed to create database directory.");
-    }
+    createDbDir();
   }
 
   // add an entry of class T (specializes Entry) to database
@@ -47,16 +42,64 @@ class Database {
   bool update(T &oldUser, T &newUser);
 
   // mark an entry as "deleted"
-  bool remove(T &);
+  bool remove(T & entry);
 
  private:
-  std::string pk;             // primary key
-  std::string dbDir;          // where to save database files
-  const int hashLength = 2;   // split the db by first `hashLength` chars of pk
+  // primary key
+  std::string pk;
 
-  // helper function for add(const T&)
-  // uses binary search
-  int getInsertPosition(std::fstream &file, const T &);
+  // create a new bucket based on name returned by bucketFn
+  std::string (*bucketFn)(T &);
+
+  // where to save database files
+  std::string dbDir;
+
+  // get name of bucket for an entry using bucketFn
+  std::string getBucketName(const T &entry);
+
+  // create a bucket if not exists
+  bool createBucket(const std::string &bucketName);
+
+  // get number of records in a bucket
+  int getNumberOfRecords(const std::string &bucketName, const T &entry);
+
+  // create the database directory
+  void createDbDir();
+
+  // helper function for add(const T&). uses binary search
+  int getInsertPosition(std::fstream &file, const T &entry);
 };
+
+template <class T>
+void Database<T>::createDbDir() {
+  // TODO: Add support for other OS
+  std::string cmd("mkdir -p " + dbDir);
+  const int st = system(cmd.c_str());
+  if (st > 1) {
+    throw std::runtime_error("Failed to create database directory.");
+  }
+}
+
+template <class T>
+std::string Database<T>::getBucketName(const T &entry) {
+  const std::string fbase(bucketFn(entry));
+  const std::string fileName = dbDir + fbase + ".txt";
+  return fileName;
+}
+
+template <class T>
+bool Database<T>::createBucket(const std::string &bucketName) {
+  std::ifstream fl(bucketName);
+  if (fl) return false;    // not created
+  const std::string cmd = "touch " + bucketName;
+  return !system(cmd.c_str());
+}
+
+template <class T>
+int Database<T>::getNumberOfRecords(const std::string &bucketName, const T& entry) {
+  std::ifstream file(bucketName);
+  file.seekg(0, std::ios::end);
+  return file.tellg() / entry.size();
+}
 
 #endif  //  SRC_DB_DATABASE_H_
