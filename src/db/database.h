@@ -11,8 +11,11 @@ int getNumberOfLines(std::fstream &file, size_t lineLength);
 template <class T>
 class Database {
  public:
-  explicit Database(const std::string &dir, const std::string &_pk)
-    : pk(_pk), dbDir(dir) {
+  explicit Database(
+    const std::string &dir,
+    const std::string &_pk,
+    std::string (*bkfn)(const T &) = nullptr)
+  : pk(_pk), dbDir(dir), bucketFn(bkfn) {
     if (dbDir.back() != '/') dbDir.append("/");
     createDbDir();
   }
@@ -49,7 +52,7 @@ class Database {
   std::string pk;
 
   // create a new bucket based on name returned by bucketFn
-  std::string (*bucketFn)(T &);
+  std::string (*bucketFn)(const T &entry);
 
   // where to save database files
   std::string dbDir;
@@ -82,9 +85,8 @@ void Database<T>::createDbDir() {
 
 template <class T>
 std::string Database<T>::getBucketName(const T &entry) {
-  const std::string fbase(bucketFn(entry));
-  const std::string fileName = dbDir + fbase + ".txt";
-  return fileName;
+  if (bucketFn != nullptr) return bucketFn(entry);
+  return entry.get(pk).substr(0, 2);
 }
 
 template <class T>
