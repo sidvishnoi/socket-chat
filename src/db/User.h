@@ -4,31 +4,32 @@
 #include <string>
 #include "./entry/entry.h"
 
-const Entry::Keys _keys = {"name", "password", "host"};
+// putting this here compiler shouts "can't put static of Keys in class"
+namespace _User {
+  const Entry::Keys _keys = {"name", "password", "host"};
+  const size_t _sz = 128;
+}
 
 class User : public Entry {
- private:
-  static const size_t _sz = 128;
-
  public:
   // default constructor. use "set()" later
-  User() : Entry(_sz, _keys) {}
+  User() : Entry(_User::_sz, _User::_keys) {}
 
   // order of values must be same as keys.
   explicit User(const Entry::Values &values);
 
   // de-serialize
-  explicit User(const std::string &str) : Entry(_sz, str) {}
+  explicit User(const std::string &str) : Entry(_User::_sz, str) {}
 };
 
-User::User(const Entry::Values &values) : Entry(_sz) {
-  if (values.size() != _keys.size()) {
+User::User(const Entry::Values &values) : Entry(_User::_sz) {
+  if (values.size() != _User::_keys.size()) {
     throw std::invalid_argument(
       "Failed to create instance of `User(Values values)`"
       ": size of keys must be same as size of values");
   }
-  for (size_t k = 0; k < _keys.size(); ++k) {
-    insert(_keys[k], values[k]);
+  for (size_t k = 0; k < _User::_keys.size(); ++k) {
+    insert(_User::_keys[k], values[k]);
   }
 }
 
