@@ -7,9 +7,9 @@ int Accept(int sockfd) {
       sockfd,
       reinterpret_cast<struct sockaddr*>(&client_addr),
       &len);
-  if (clientSockfd < 0) {
+  /*if (clientSockfd < 0) {
     printError();
     throw std::runtime_error("Error on accept");
-  }
+  }*/
   return clientSockfd;
 }

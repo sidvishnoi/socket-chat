@@ -8,8 +8,11 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <cerrno>
+#include <sys/select.h>
+#include <sys/time.h>
 
-using namespace std;
+using std::cout; using std::cin; using std::endl;
 
 int Socket();
 int Connect(int sockfd, int port);
+int clientChat(int sockfd);

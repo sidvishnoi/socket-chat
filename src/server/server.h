@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <cerrno>
+#include <sys/select.h>
+#include <sys/time.h>
 
 using std::cout; using std::cin; using std::endl;
 
@@ -19,5 +21,6 @@ int Socket();
 void Bind(int sockfd, int port);
 void Listen(int sockfd, int backlog);
 int Accept(int sockfd);
+int serverChat(int sockfd);
 
 #endif  // SRC_SERVER_SERVER_H_

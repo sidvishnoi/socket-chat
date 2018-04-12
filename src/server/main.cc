@@ -13,8 +13,7 @@ int main(int argc, char *argv[]) {
   const int sockfd = Socket();
   Bind(sockfd, port);
   Listen(sockfd, backlog);
-  Accept(sockfd);
-
+  serverChat(sockfd);
   close(sockfd);
   return errno;
 }
