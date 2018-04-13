@@ -1,6 +1,5 @@
 CXX=g++
 CFLAGS=-std=c++14 -Wall -Wextra
-BIN=bin
 SRC_SERVER=$(shell find ./src/server ./src/db -name "*.cc")
 SRC_CLIENT=$(shell find ./src/client -name "*.cc")
 OBJ_SERVER=$(subst .cc,.o,$(SRC_SERVER))
