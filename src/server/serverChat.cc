@@ -62,11 +62,12 @@ int serverChat(int sockfd) {
                 return itr.second == clientName;
             });
             if (msgReceiver != clients.end()) userFound = true;
-            string temp = clients[currentClientFd] + " > " + msg;
-            send(msgReceiver->first, temp.c_str(), temp.size(), 0);
+            if (userFound) {
+              string temp = clients[currentClientFd] + " > " + msg;
+              send(msgReceiver->first, temp.c_str(), temp.size(), 0);
+            }
           }
           if (userFound) continue;
-          // send to all
           string temp = clients[currentClientFd] + " > " + msg;
           broadcast(clients, currentClientFd, temp);
         }
