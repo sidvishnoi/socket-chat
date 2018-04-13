@@ -9,13 +9,17 @@ int clientChat(int sockfd) {
   }
   char buffer[BUFFER_SIZE] = {0};
 
+  // send user name to server
+  send(sockfd, name.c_str(), name.size(), 0);
+
+  // get welcome msg
   if (recv(sockfd, buffer, BUFFER_SIZE, 0) <= 0) {
     cout << "error in receiving message" << endl;
     return 0;
   } else {
     cout << "MSG -> " << buffer << endl;
   }
-  cout << "Enter quit for exit" << endl;
+  cout << "Enter /q for exit" << endl;
 
   fd_set master;
   int maxfd = sockfd + 1;
@@ -51,7 +55,7 @@ int clientChat(int sockfd) {
         return 0;
       }
       std::string receivedMsg(buffer);
-      cout << "RECV: " << receivedMsg << endl;
+      cout << receivedMsg << endl;
     }
   }
   return 0;

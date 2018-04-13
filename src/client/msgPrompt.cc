@@ -1,5 +1,6 @@
 #include "./client.h"
 
 void msgPrompt(std::string &name) {
-  cout << name << " > " << std::flush;
+  cout << "\r" << color::green << name << "➜ "
+    << color::reset << std::flush;
 }
