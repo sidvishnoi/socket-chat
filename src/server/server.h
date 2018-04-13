@@ -25,6 +25,7 @@ void Bind(int sockfd, int port);
 void Listen(int sockfd, int backlog);
 int Accept(int sockfd);
 int serverChat(int sockfd);
+void broadcast(FdToName &clients, int currentClientFd, const string &msg);
 
 const int BUFFER_SIZE = 1024;
 const string welcomeMsg("Welcome client");

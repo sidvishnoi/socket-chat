@@ -1,6 +1,5 @@
 #include "./server.h"
 
-
 int serverChat(int sockfd) {
   int max = sockfd;
   char buffer[BUFFER_SIZE];
@@ -29,42 +28,33 @@ int serverChat(int sockfd) {
       send(newClient, welcomeMsg.c_str(), welcomeMsg.size(), 0);
       continue;
     }
+
     for (auto it = clients.begin(); it != clients.end(); ++it) {
       const int currentClientFd = it->first;
       if (FD_ISSET(currentClientFd, &master)) {
         memset(buffer, 0, BUFFER_SIZE);
-        // handle client connection lost
         const int bytesRead = recv(currentClientFd, buffer, sizeof(buffer), 0);
         if (bytesRead <= 0) {
+          // handle client connection lost
           FD_CLR(currentClientFd, &master);
           close(currentClientFd);
+          clients[currentClientFd] = "";
           string msg = clients[currentClientFd] + " is offline";
-          if (clients[currentClientFd] != "") {
-            for (auto itr = clients.begin(); itr != clients.end(); ++itr) {
-              if (itr->first != currentClientFd) {
-                // broadcast to all except the one lost
-                send(itr->first, msg.c_str(), msg.size(), 0);
-              }
-            }
-          }
+          broadcast(clients, currentClientFd, msg);
         } else if (clients[currentClientFd].empty()) {
           // broadcast new connection info
           string newClientName(buffer);
           string msg = string(newClientName) + " is online";
-          for (auto itr = clients.begin(); itr != clients.end(); ++itr) {
-            if (itr->first != currentClientFd) {
-              // broadcast to all except the new one
-              send(itr->first, msg.c_str(), msg.size(), 0);
-            } else {
-              clients[currentClientFd] = newClientName;
-            }
-          }
+          clients[currentClientFd] = newClientName;
+          broadcast(clients, currentClientFd, msg);
         } else {
+          // send messages
           bool userFound = false;
           string msg(buffer);
           cout << msg << endl;
           auto posAt = find(msg.begin(), msg.end(), '@');
           if (posAt == msg.begin()) {
+            // send private message
             string clientName(++posAt, std::find(msg.begin(), msg.end(), ' '));
             auto msgReceiver = find_if(clients.begin(),
               clients.end(),
@@ -76,12 +66,9 @@ int serverChat(int sockfd) {
             send(msgReceiver->first, temp.c_str(), temp.size(), 0);
           }
           if (userFound) continue;
+          // send to all
           string temp = clients[currentClientFd] + " > " + msg;
-          for (auto itr = clients.begin(); itr != clients.end(); ++itr) {
-            if (itr->first != currentClientFd && !clients[itr->first].empty()) {
-              send(itr->first, temp.c_str(), temp.size(), 0);
-            }
-          }
+          broadcast(clients, currentClientFd, temp);
         }
       }
     }

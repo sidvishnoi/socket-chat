@@ -17,7 +17,7 @@ using std::cout; using std::cin; using std::endl;
 int Socket();
 int Connect(int sockfd, int port);
 int clientChat(int sockfd);
-void msgPrompt(std::string &name);
+void msgPrompt(const std::string &name);
 
 namespace color {
   const std::string red("\033[0;31m");
