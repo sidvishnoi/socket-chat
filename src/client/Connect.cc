@@ -1,21 +1,18 @@
 #include "./client.h"
 
 int Connect(int sockfd, int port) {
-    if(sockfd < 0) {
-        throw std::runtime_error("Error in socket connection");
-        return -1;
-    }
-    
-    struct sockaddr_in server_addr;
+  struct sockaddr_in server_addr;
+  server_addr.sin_family = AF_INET;
+  server_addr.sin_port = htons(port);
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
+  inet_pton(AF_INET, "127.0.0.1", &(server_addr.sin_addr));
 
-    int x = inet_pton(AF_INET, "127.0.0.1", &(server_addr.sin_addr));
-
-    if(connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
-        throw std::runtime_error("Error in making connection");
-    }
-    cout << "Connection established" << endl;
-    return 0; 
+  const int res = connect(sockfd,
+    reinterpret_cast<struct sockaddr*>(&server_addr),
+    sizeof(server_addr)
+  );
+  if (res == -1) {
+    throw std::runtime_error("Error in making connection");
+  }
+  return 0;
 }
