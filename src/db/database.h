@@ -9,7 +9,7 @@
 template <class T>
 class Database {
  public:
-  explicit Database(
+  Database(
     const std::string &dir,
     const std::string &_pk,
     std::pair<int, int> _bucketHash = {0, 2}
@@ -26,20 +26,20 @@ class Database {
   std::pair<T, int> get(const std::string &value);
 
   // update an entry in database
-  bool update(T &oldEntry, T &newEntry);
+  bool update(const T &oldEntry, const T &newEntry);
 
   // mark an entry as "deleted"
-  bool remove(T & entry);
+  bool remove(const T & entry);
 
  private:
   // primary key
   std::string pk;
 
-  // bucket name is substring of pk at these indices
-  std::pair<int, int> bucketHash;
-
   // where to save database files
   std::string dbDir;
+
+  // bucket name is substring of pk at these indices
+  std::pair<int, int> bucketHash;
 
   // get name of bucket for a pk value using bucketHash
   std::string getBucketName(const std::string &pkValue) {
@@ -109,14 +109,17 @@ std::pair<T, int> Database<T>::get(const std::string &value) {
 }
 
 template <class T>
-bool Database<T>::update(T &oldEntry, T &newEntry) {
+bool Database<T>::update(const T &oldEntry, const T &newEntry) {
   using namespace std;
 
   pair<T, int> old = get(oldEntry.get(pk));
 
   // do not update if some entry already exists with newEntry.pk
+  // while allowing self to be updated
   pair<T, int> same = get(newEntry.get(pk));
-  if (same.second != -1) return false;
+  if (same.second != -1 && same.second != old.second) {
+    return false;
+  }
 
   ofstream bucket(
     getBucketName(oldEntry.get(pk)),

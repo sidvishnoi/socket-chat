@@ -9,7 +9,7 @@ Entry::Entry(size_t _sz, const std::string &str) {
   sz = _sz;
   stringstream in(str);
   string token, key, value;
-  while (getline(in, token, ',') && !token.empty()) {
+  while ((getline(in, token, ',') >> std::ws) && !token.empty()) {
     stringstream tk(token);
     getline(getline(tk, key, ':') >> std::ws, value);
     m[key] = value;
