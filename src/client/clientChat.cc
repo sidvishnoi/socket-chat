@@ -1,31 +1,12 @@
 #include "./client.h"
 
-int clientChat(int sockfd) {
-  std::string name;
-  while (true) {
-    cout << "Enter your name: ";
-    cin >> name;
-    if (!name.empty()) break;
-  }
+int clientChat(int sockfd, const std::string &username) {
   char buffer[BUFFER_SIZE] = {0};
-
-  // send user name to server
-  send(sockfd, name.c_str(), name.size(), 0);
-
-  // get welcome msg
-  if (recv(sockfd, buffer, BUFFER_SIZE, 0) <= 0) {
-    cout << "error in receiving message" << endl;
-    return 0;
-  } else {
-    cout << "MSG -> " << buffer << endl;
-  }
-  cout << "Enter /q for exit" << endl;
-
   fd_set master;
   int maxfd = sockfd + 1;
 
   while (true) {
-    msgPrompt(name);
+    msgPrompt(username);
     FD_ZERO(&master);
     FD_SET(sockfd, &master);
     FD_SET(STDIN_FILENO, &master);
@@ -55,7 +36,7 @@ int clientChat(int sockfd) {
         return 0;
       }
       std::string receivedMsg(buffer);
-      cout << receivedMsg << endl;
+      printMessage(receivedMsg);
     }
   }
   return 0;
