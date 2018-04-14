@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/time.h>
@@ -34,6 +35,7 @@ string login(Database<User> &db, const string &uname, const string &pass);
 bool logout(Database<User> &db, const string &uname);
 
 int serverChat(int sockfd);
+std::string getPeerName(const int sockfd);
 void broadcast(FdToName &clients, int currentClientFd, const string &msg);
 
 const int BUFFER_SIZE = 1024;

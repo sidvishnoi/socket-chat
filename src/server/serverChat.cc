@@ -18,11 +18,11 @@ int serverChat(int sockfd) {
 
     if (FD_ISSET(sockfd, &master)) {
       const int newClient = Accept(sockfd);
-      cout << newClient << " Accepted new connection" << endl;
       if (newClient < 0) {
-        cout << "Cannot Accept from newClient" << endl;
+        cout << "Cannot Accept from newClient = " << newClient << endl;
         continue;
       }
+      cout << "New client joined: " << getPeerName(newClient) << endl;
       FD_SET(newClient, &master);
       clients[newClient] = "";
       continue;
