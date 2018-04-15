@@ -2,7 +2,7 @@
 
 void Bind(int sockfd, int port) {
   struct sockaddr_in server_addr;
-  bzero(reinterpret_cast<char*>(&server_addr), sizeof server_addr);
+  std::fill_n(reinterpret_cast<char*>(&server_addr), sizeof server_addr, '\0');
 
   const int reuse = 1;
   if (setsockopt(

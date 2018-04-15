@@ -34,7 +34,7 @@ int serverChat(int sockfd) {
       const int currentClientFd = p.first;
       if (!FD_ISSET(currentClientFd, &master)) continue;
 
-      memset(buffer, 0, BUFFER_SIZE);
+      std::fill_n(buffer, BUFFER_SIZE, '\0');
       const int bytesRead = recv(currentClientFd, buffer, sizeof(buffer), 0);
       cout << "BUFFER = " << buffer << endl;
 
