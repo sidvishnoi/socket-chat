@@ -15,9 +15,22 @@
 #include <cerrno>
 #include <string>
 #include <vector>
+#include <set>
 
 using std::cout; using std::cin; using std::endl;
 using StrPair = std::pair<std::string, std::string>;
+
+namespace cmd {
+  enum Commands {
+    NOT_CMD,
+    INVALID,
+    QUIT,
+    HELP,
+    JOIN,
+    LIST_CHATROOMS,
+    LIST_PEOPLE
+  };
+}
 
 int Socket();
 int Connect(int sockfd, int port);
@@ -28,6 +41,8 @@ void msgPrompt(const std::string &name);
 void printMessage(const std::string &msg);
 void printHelpMessage();
 
+cmd::Commands getCommandType(const std::string &);
+
 namespace color {
   const std::string red("\033[0;31m");
   const std::string green("\033[1;32m");
@@ -37,7 +52,7 @@ namespace color {
   const std::string reset("\033[0m");
 }
 
-std::vector<std::string> split(const std::string &str, const std::string &delim);
+std::vector<std::string> split(const std::string &str, const std::string &delim, const int limit);
 
 const int BUFFER_SIZE = 1024;
 const std::string DELIM("$$$");

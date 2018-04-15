@@ -3,7 +3,7 @@
 // if type is set, msg must be plain `msg: user+DELIM+msg`
 void printMessage(const std::string &msg) {
   cout << "\r";
-  auto tokens = split(msg, DELIM);
+  auto tokens = split(msg, DELIM, 3);
   auto &type = tokens[0], &sender = tokens[1], &text = tokens[2];
 
   if (type == "INFO") cout << color::yellow;
