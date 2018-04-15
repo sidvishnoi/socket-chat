@@ -13,8 +13,9 @@ std::vector<std::string> split(const std::string &str, const std::string &delim,
     if (!token.empty()) {
       tokens.push_back(token);
       ++found;
+      if (found == limit) break;
     }
     prev = pos + delim.length();
-  } while ((found < limit) || (pos < str.length() && prev < str.length()));
+  } while (pos < str.length() && prev < str.length());
   return tokens;
 }
