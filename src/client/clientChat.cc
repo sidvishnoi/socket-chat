@@ -10,7 +10,7 @@ int clientChat(int sockfd, const std::string &username) {
   bool allowMessages = false;
 
   while (true) {
-    msgPrompt(username);
+    msgPrompt(username, activeChatroom);
     FD_ZERO(&master);
     FD_SET(sockfd, &master);
     FD_SET(STDIN_FILENO, &master);

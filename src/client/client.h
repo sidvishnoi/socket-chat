@@ -37,7 +37,7 @@ int Connect(int sockfd, int port);
 StrPair getCredentials();
 bool login(const int sockfd, const StrPair& credentials);
 int clientChat(int sockfd, const std::string &username);
-void msgPrompt(const std::string &name);
+void msgPrompt(const std::string &name, const std::string &chatroom);
 void printMessage(const std::string &msg);
 void printHelpMessage();
 
