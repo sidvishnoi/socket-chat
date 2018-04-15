@@ -88,6 +88,10 @@ int serverChat(int sockfd) {
             }
 
             case LIST_PEOPLE: {
+              auto &chatRoomName = split(msg, DELIM, 2)[1];
+              auto lst = getPeopleList(chatRoomName, clients, chatRooms);
+              auto response = "INFO" + DELIM + "PEOPLE#" + chatRoomName + DELIM + "\n" + lst;
+              send(currentClientFd, response.c_str(), response.size(), 0);
               continue;
             }
 

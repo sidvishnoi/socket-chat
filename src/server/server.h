@@ -51,6 +51,7 @@ bool logout(Database<User> &db, const string &uname);
 int serverChat(int sockfd);
 cmd::Commands getMessageType(const std::string &);
 std::string getChatroomsList(const ChatroomToFdList &chatRooms);
+std::string getPeopleList(const std::string &chatRoomName, const FdToName &names, const ChatroomToFdList &chatRooms);
 std::string getPeerName(const int sockfd);
 void broadcast(const FdToName &names, const FdList &clients, const int currentClientFd, const string &msg);
 void privateChat(FdToName &clients, int currentClientFd, const string &msg, string clientName);
