@@ -85,6 +85,17 @@ int clientChat(int sockfd, const std::string &username) {
         return 0;
       }
       std::string receivedMsg(buffer);
+      if (receivedMsg.find(DELIM) == 0) {
+        // process response of request
+        auto tokens = split(receivedMsg, DELIM, 2);
+        auto &type = tokens[0], &arg = tokens[1];
+        if (type == "JOIN") {
+          allowMessages = true;
+          activeChatroom = arg;
+          activeChatrooms.insert(arg);
+        }
+        continue;
+      }
       printMessage(receivedMsg);
     }
   }
