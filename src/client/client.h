@@ -26,6 +26,7 @@ bool login(const int sockfd, const StrPair& credentials);
 int clientChat(int sockfd, const std::string &username);
 void msgPrompt(const std::string &name);
 void printMessage(const std::string &msg);
+void printHelpMessage();
 
 namespace color {
   const std::string red("\033[0;31m");
