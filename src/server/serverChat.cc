@@ -5,6 +5,7 @@ int serverChat(int sockfd) {
   int max = sockfd;
   char buffer[BUFFER_SIZE];
   FdToName clients;
+  ChatRoomToFd chatRooms;
   fd_set master;
 
   while (true) {
@@ -59,28 +60,43 @@ int serverChat(int sockfd) {
             continue;
           }
           clients[currentClientFd] = newClientName;
+          broadcast(clients, currentClientFd, msg);
+          //sending information to newly connected client.
+          firstMsg(chatRooms, currentClientFd);
           string newClientOnlineMsg = "INFO" + DELIM + newClientName + DELIM +  + "is online";
           broadcast(clients, currentClientFd, newClientOnlineMsg);
         } else {
-          // send messages
-          bool userFound = false;
           string msg(buffer);
-          string msgBody = "MSG" + DELIM + clients[currentClientFd] + DELIM + msg;
-          auto posAt = find(msg.begin(), msg.end(), '@');
-          if (posAt == msg.begin()) {
-            // send private message
-            string clientName(++posAt, std::find(msg.begin(), msg.end(), ' '));
-            auto msgReceiver = find_if(clients.begin(),
-              clients.end(),
-              [&clientName](auto const &itr) -> bool {
-                return itr.second == clientName;
-            });
-            if (msgReceiver != clients.end()) userFound = true;
-            send(msgReceiver->first, msgBody.c_str(), msgBody.size(), 0);
+          unsigned int index = msg.find(' ');
+          cout << msg << endl;
+          if(++index == msg.size())
+            continue;
+          string msgToSend(msg.substr(index));
+          cout << msgToSend << endl;
+          auto  posAt = find(msgToSend.begin(), msgToSend.end(), '@');
+          string temp = clients[currentClientFd] + " > " + msgToSend;
+          if (posAt == msgToSend.begin()) {
+            string clientName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
+            privateChat(clients, currentClientFd, temp, clientName);
+            continue;
           }
-          if (userFound) continue;
-          // send to all
-          broadcast(clients, currentClientFd, msgBody);
+          else if(msgToSend.find(".join#") == 0 && msgToSend.find(' ') == std::string::npos) {
+            string chatRoomName(msgToSend.substr(6));
+            joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms); 
+            continue;
+          }
+          else if(msgToSend.find(".create#") == 0  && msgToSend.find(' ') == std::string::npos) {
+            string chatRoomName(msgToSend.substr(8));
+            createChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
+            continue;
+          }
+          else if(msgToSend.find('#') == 0) {
+              posAt = find(msgToSend.begin(), msgToSend.end(), '#');
+              string chatRoomName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
+              broadcastToChatRoom(clients, chatRooms, chatRoomName, currentClientFd, msg);
+              continue;
+          }
+          broadcast(clients, currentClientFd, temp);
         }
       }
     }

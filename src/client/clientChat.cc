@@ -26,6 +26,10 @@ int clientChat(int sockfd, const std::string &username) {
         cout << "Connection closed!!\n";
         return 0;
       }
+      cout << chatRoom << " dsi" << endl;
+      msgToSend = "$" +   chatRoom + " " + msgToSend;
+      //cout << msgToSend << endl;
+      //cout << msgToSend.size() << endl;
       send(sockfd, msgToSend.c_str(), msgToSend.size(), 0);
     }
 
