@@ -17,6 +17,9 @@
 #include <vector>
 #include <set>
 
+const std::string ALT_SCREEN_ON("\033[2J\033[1;1H");
+const std::string ALT_SCREEN_OFF("\033[2J\033[?47l\0338");
+
 using std::cout; using std::cin; using std::endl;
 using StrPair = std::pair<std::string, std::string>;
 
