@@ -49,6 +49,7 @@ string login(Database<User> &db, const string &uname, const string &pass);
 bool logout(Database<User> &db, const string &uname);
 
 int serverChat(int sockfd);
+bool addClient(const int currentClientFd, fd_set *master, const std::string &credentials, Database<User> &db, FdToName &names);
 cmd::Commands getMessageType(const std::string &);
 std::string getChatroomsList(const ChatroomToFdList &chatRooms);
 std::string getPeopleList(const std::string &chatRoomName, const FdToName &names, const ChatroomToFdList &chatRooms);

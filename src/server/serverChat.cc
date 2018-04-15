@@ -30,110 +30,102 @@ int serverChat(int sockfd) {
       continue;
     }
 
-    for (auto it = clients.begin(); it != clients.end(); ++it) {
-      const int currentClientFd = it->first;
-      if (FD_ISSET(currentClientFd, &master)) {
-        memset(buffer, 0, BUFFER_SIZE);
-        const int bytesRead = recv(currentClientFd, buffer, sizeof(buffer), 0);
-        cout << "BUFFER = " << buffer << endl;
-        bool connectionLost = (bytesRead <= 0);
-        if (connectionLost) {
-          FD_CLR(currentClientFd, &master);
-          close(currentClientFd);
-          string username(clients[currentClientFd]);
-          logout(db, username);
-          clients[currentClientFd] = "";
-          string info = "INFO" + DELIM + username + DELIM + "went offline";
-          // TODO:
-          // 1. find groups in which client was,
-          // 2. broadcast to all those groups
-          // broadcast(clients, currentClientFd, info);
-        } else if (clients[currentClientFd].empty()) {
-          // login new client
-          vector<string> tokens = split(string(buffer), DELIM, 2);
-          string newClientName(tokens[0]);
-          string password(tokens[1]);
-          auto loginStatus = login(db, newClientName, password);
-          string loginMsg = ((loginStatus != "SUCCESS") ? "ERROR" : "INFO") + DELIM + "AUTH" + DELIM + loginStatus;
-          send(currentClientFd, loginMsg.c_str(), loginMsg.size(), 0);
-          if (loginStatus != "SUCCESS") {
-            cout << "Invalid login attempt by: " << newClientName << endl;
-            clients[currentClientFd] = "";
-            FD_CLR(currentClientFd, &master);
-            close(currentClientFd);
-            continue;
-          }
-          clients[currentClientFd] = newClientName;
-        } else {
-          // process messages
-          string msg(buffer);
-          auto type = getMessageType(msg);
-          if (type == NOT_CMD) {
-            // TODO: send messages
-            cout << "message: " << msg << endl;
-          }
-          switch (type) {
-            case JOIN: {
-              auto &chatRoomName = split(msg, DELIM, 2)[1];
-              cout << clients[currentClientFd] << " requested to join " << chatRoomName << endl;
-              joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
-              continue;
-            }
+    for (auto &p : clients) {
+      const int currentClientFd = p.first;
+      if (!FD_ISSET(currentClientFd, &master)) continue;
 
-            case LEAVE: {
-              auto &chatRoomName = split(msg, DELIM, 2)[1];
-              cout << clients[currentClientFd] << " left #" << chatRoomName << endl;
-              leaveChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
-              continue;
-            }
+      memset(buffer, 0, BUFFER_SIZE);
+      const int bytesRead = recv(currentClientFd, buffer, sizeof(buffer), 0);
+      cout << "BUFFER = " << buffer << endl;
 
-            case LIST_CHATROOMS: {
-              auto response = getChatroomsList(chatRooms);
-              send(currentClientFd, response.c_str(), response.size(), 0);
-              continue;
-            }
-
-            case LIST_PEOPLE: {
-              auto &chatRoomName = split(msg, DELIM, 2)[1];
-              auto lst = getPeopleList(chatRoomName, clients, chatRooms);
-              auto response = "INFO" + DELIM + "PEOPLE#" + chatRoomName + DELIM + "\n" + lst;
-              send(currentClientFd, response.c_str(), response.size(), 0);
-              continue;
-            }
-
-            case INVALID:
-            default: continue;
-          }
-
-          continue;
-          // DO NOT READ BELOW. IT'S TEMPORARY AND WILL BE REFACTORED.
-
-          unsigned int index = msg.find(' ');
-          if(++index == msg.size()) continue;
-          string msgToSend(msg.substr(index));
-          cout << msgToSend << endl;
-          auto posAt = find(msgToSend.begin(), msgToSend.end(), '@');
-          string temp = clients[currentClientFd] + " > " + msgToSend;
-          if (posAt == msgToSend.begin()) {
-            string clientName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
-            privateChat(clients, currentClientFd, temp, clientName);
-            continue;
-          }
-          else if(msgToSend.find(".join#") == 0 && msgToSend.find(' ') == std::string::npos) {
-            string chatRoomName(msgToSend.substr(6));
-            joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
-            continue;
-          }
-          else if(msgToSend.find('#') == 0) {
-              posAt = find(msgToSend.begin(), msgToSend.end(), '#');
-              string chatRoomName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
-              // broadcast(clients, chatRooms, chatRoomName, currentClientFd, msg);
-              continue;
-          }
-          // broadcast(clients, currentClientFd, temp);
-        }
+      bool connectionLost = (bytesRead <= 0);
+      if (connectionLost) {
+        FD_CLR(currentClientFd, &master);
+        close(currentClientFd);
+        string username(clients[currentClientFd]);
+        logout(db, username);
+        clients[currentClientFd] = "";
+        string info = "INFO" + DELIM + username + DELIM + "went offline";
+        // TODO:
+        // 1. find groups in which client was,
+        // 2. broadcast to all those groups
+        // broadcast(clients, currentClientFd, info);
+        continue;
       }
-    }
-  }
+
+      if (clients[currentClientFd].empty()) {
+        addClient(currentClientFd, &master, string(buffer), db, clients);
+        continue;
+      }
+
+      // process messages
+      string msg(buffer);
+      auto type = getMessageType(msg);
+      if (type == NOT_CMD) {
+        // TODO: send messages
+        cout << "message: " << msg << endl;
+      }
+
+      switch (type) {
+        case JOIN: {
+          auto &chatRoomName = split(msg, DELIM, 2)[1];
+          cout << clients[currentClientFd] << " requested to join " << chatRoomName << endl;
+          joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
+          continue;
+        }
+
+        case LEAVE: {
+          auto &chatRoomName = split(msg, DELIM, 2)[1];
+          cout << clients[currentClientFd] << " left #" << chatRoomName << endl;
+          leaveChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
+          continue;
+        }
+
+        case LIST_CHATROOMS: {
+          auto response = getChatroomsList(chatRooms);
+          send(currentClientFd, response.c_str(), response.size(), 0);
+          continue;
+        }
+
+        case LIST_PEOPLE: {
+          auto &chatRoomName = split(msg, DELIM, 2)[1];
+          auto lst = getPeopleList(chatRoomName, clients, chatRooms);
+          auto response = "INFO" + DELIM + "PEOPLE#" + chatRoomName + DELIM + "\n" + lst;
+          send(currentClientFd, response.c_str(), response.size(), 0);
+          continue;
+        }
+
+        case INVALID:
+        default: continue;
+      }
+
+      continue;
+      // DO NOT READ BELOW. IT'S TEMPORARY AND WILL BE REFACTORED.
+
+      unsigned int index = msg.find(' ');
+      if(++index == msg.size()) continue;
+      string msgToSend(msg.substr(index));
+      cout << msgToSend << endl;
+      auto posAt = find(msgToSend.begin(), msgToSend.end(), '@');
+      string temp = clients[currentClientFd] + " > " + msgToSend;
+      if (posAt == msgToSend.begin()) {
+        string clientName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
+        privateChat(clients, currentClientFd, temp, clientName);
+        continue;
+      }
+      else if(msgToSend.find(".join#") == 0 && msgToSend.find(' ') == std::string::npos) {
+        string chatRoomName(msgToSend.substr(6));
+        joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
+        continue;
+      }
+      else if(msgToSend.find('#') == 0) {
+          posAt = find(msgToSend.begin(), msgToSend.end(), '#');
+          string chatRoomName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
+          // broadcast(clients, chatRooms, chatRoomName, currentClientFd, msg);
+          continue;
+      }
+      // broadcast(clients, currentClientFd, temp);
+    } // end:range-for-clients
+  }  // end:while
   return 0;
 }
