@@ -43,13 +43,12 @@ void broadcast(FdToName &clients, int currentClientFd, const string &msg);
 void broadcastToChatRoom(FdToName &clients,  ChatRoomToFd chatRooms, const string chatRoomName, int currentClientFd, const string &msg);
 void privateChat(FdToName &clients, int currentClientFd, const string &msg, string clientName);
 void switchChatRoom(string chatRoomName, int clientFd, ChatRoomToFd &chatRooms);
-void joinChatRoom(string chatRoomName, int clientFd, FdToName &clients, ChatRoomToFd &chatRooms);
-void createChatRoom(string chatRoomName, int clientFd, FdToName &clients, ChatRoomToFd &chatRooms);
+void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &clients, ChatRoomToFd &chatRooms);
 
 const int BUFFER_SIZE = 1024;
 const string DELIM("$$$");
 const string welcomeMsg("Welcome client");
 
-vector<string> split(const string &str, const string &delim);
+vector<string> split(const string &str, const string &delim, const int limit);
 
 #endif  // SRC_SERVER_SERVER_H_
