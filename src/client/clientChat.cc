@@ -29,13 +29,15 @@ int clientChat(int sockfd, const std::string &username) {
       if (cin.fail() || cin.eof() || msgToSend == "/q") {
         cout << "Connection closed!!\n";
         return 0;
-      } else if (msgToSend.empty()) {
-        continue;
       }
+      if (msgToSend.empty()) continue;
 
       auto cmdType = getCommandType(msgToSend);
       if (cmdType == NOT_CMD) {
-        if (!allowMessages) continue;
+        if (!allowMessages) {
+          printMessage("ERROR" + DELIM + "JOIN" + DELIM + "You must join a chatroom first.");
+          continue;
+        }
         // not a command, send as message
         send(sockfd, msgToSend.c_str(), msgToSend.size(), 0);
         continue;
@@ -49,23 +51,24 @@ int clientChat(int sockfd, const std::string &username) {
         }
         case JOIN: {
           auto chatroom = split(msgToSend, " ", 2)[1].substr(1);
-          cout << "joining chatroom : " << chatroom << endl;
-          activeChatroom = chatroom;
-          allowMessages = true;
-          activeChatrooms.insert(chatroom);
+          std::string request = DELIM + "JOIN" + DELIM + chatroom;
+          send(sockfd, request.c_str(), request.size(), 0);
           continue;
         }
 
         case LIST_CHATROOMS: {
-          std::string cmd = DELIM + "LIST_CHATROOMS";
-          send(sockfd, cmd.c_str(), cmd.size(), 0);
+          std::string request = DELIM + "LIST_CHATROOMS";
+          send(sockfd, request.c_str(), request.size(), 0);
           continue;
         }
 
         case LIST_PEOPLE: {
-          if (!allowMessages) continue;
-          std::string cmd = DELIM + "LIST_PEOPLE";
-          send(sockfd, cmd.c_str(), cmd.size(), 0);
+          if (!allowMessages) {
+            printMessage("ERROR" + DELIM + "JOIN" + DELIM + "You must join a chatroom first.");
+            continue;
+          }
+          std::string request = DELIM + "LIST_PEOPLE" + DELIM + activeChatroom;
+          send(sockfd, request.c_str(), request.size(), 0);
           continue;
         }
 
