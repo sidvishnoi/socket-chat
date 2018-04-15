@@ -65,7 +65,7 @@ int serverChat(int sockfd) {
           // send messages
           bool userFound = false;
           string msg(buffer);
-          string msgBody = "MSG" + clients[currentClientFd] + DELIM + msg;
+          string msgBody = "MSG" + DELIM + clients[currentClientFd] + DELIM + msg;
           auto posAt = find(msg.begin(), msg.end(), '@');
           if (posAt == msg.begin()) {
             // send private message
