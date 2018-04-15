@@ -7,7 +7,8 @@ std::string login(Database<User> &db, const string &uname, const string &pass) {
   // register user if not exists and log in
   if (user["status"] == "undefined") {
     db.add(User({uname, pass, "1"}));
-    cout << "Registered new user: " << uname << endl;
+    cout << color::green << "[CLIENT:REGISTER] " << color::reset
+      << "<" << uname << "> registered" << endl;
     return "SUCCESS";
   }
 

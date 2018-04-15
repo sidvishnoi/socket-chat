@@ -17,13 +17,16 @@ bool addClient(
   send(currentClientFd, loginMsg.c_str(), loginMsg.size(), 0);
 
   if (loginStatus == "SUCCESS") {
-    cout << username << " logged in from <"
+    cout << color::green << "[CLIENT:LOGIN] " << color::reset
+      << "<" << username << "> logged in from <"
       << getPeerName(currentClientFd) << ">" << endl;
     names[currentClientFd] = username;
     return true;
   }
 
-  cout << "Invalid login attempt by: " << username << endl;
+  cout << color::magenta << "[CLIENT:AUTH_FAIL] " << color::reset
+    << "Invalid login attempt by <" << username << "> from <"
+    << getPeerName(currentClientFd) << ">" << endl;
   names[currentClientFd] = "";
   FD_CLR(currentClientFd, master);
   close(currentClientFd);

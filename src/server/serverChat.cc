@@ -21,10 +21,12 @@ int serverChat(int sockfd) {
     if (FD_ISSET(sockfd, &master)) {
       const int newClient = Accept(sockfd);
       if (newClient < 0) {
-        cout << "Cannot Accept from newClient = " << newClient << endl;
+        cout << color::red << "[CONNECTION:ERROR] " << color::reset
+          << "Cannot Accept from newClient = " << newClient << endl;
         continue;
       }
-      cout << "New client joined: " << getPeerName(newClient) << endl;
+      cout << color::yellow << "[CONNECTION:INFO] " << color::reset
+        << "New client joined from <" << getPeerName(newClient) << ">" << endl;
       FD_SET(newClient, &master);
       clients[newClient] = "";
       continue;
@@ -46,6 +48,8 @@ int serverChat(int sockfd) {
         logout(db, username);
         clients[currentClientFd] = "";
         string info = "INFO" + DELIM + username + DELIM + "went offline";
+        cout << color::magenta << "[CLIENT:OFFLINE] " << color::reset
+          << "<" << username << "> went offline" << endl;
         // TODO:
         // 1. find groups in which client was,
         // 2. broadcast to all those groups
@@ -69,14 +73,18 @@ int serverChat(int sockfd) {
       switch (type) {
         case JOIN: {
           auto &chatRoomName = split(msg, DELIM, 2)[1];
-          cout << clients[currentClientFd] << " requested to join " << chatRoomName << endl;
+          cout << color::green << "[CLIENT:JOIN] " << color::reset
+            << "<" << clients[currentClientFd] << "> requested to join #"
+            << chatRoomName << endl;
           joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
           continue;
         }
 
         case LEAVE: {
           auto &chatRoomName = split(msg, DELIM, 2)[1];
-          cout << clients[currentClientFd] << " left #" << chatRoomName << endl;
+          cout << color::green << "[CLIENT:LEAVE] " << color::reset
+            << "<" << clients[currentClientFd] << "> left #"
+            << chatRoomName << endl;
           leaveChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
           continue;
         }
