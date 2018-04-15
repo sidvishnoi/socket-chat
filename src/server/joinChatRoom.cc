@@ -11,9 +11,9 @@ void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &
 
   bool exists = chatRoomItr != chatRooms.end();
   if(!exists) {
-    chatRooms[chatRoomName] = std::vector<int> {clientFd};
+    chatRooms[chatRoomName] = FdList{clientFd};
   } else {
-    chatRooms[chatRoomName].push_back(clientFd);
+    chatRooms[chatRoomName].insert(clientFd);
   }
 
   std::string response = DELIM + "JOIN" + DELIM + chatRoomName;

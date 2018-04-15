@@ -16,14 +16,14 @@
 #include <map>
 #include <vector>
 #include <algorithm>
-#include <vector>
+#include <set>
 #include "../db/database.h"
 #include "../db/User.h"
 
 using std::cout; using std::cin; using std::endl;
 using std::string;
 using std::vector;
-using FdList = vector<int>;
+using FdList = std::set<int>;
 using FdToName = std::map<int, string>;
 using ChatroomToFdList = std::map<string, FdList>;
 
@@ -55,7 +55,6 @@ std::string getPeopleList(const std::string &chatRoomName, const FdToName &names
 std::string getPeerName(const int sockfd);
 void broadcast(const FdToName &names, const FdList &clients, const int currentClientFd, const string &msg);
 void privateChat(FdToName &clients, int currentClientFd, const string &msg, string clientName);
-void switchChatRoom(string chatRoomName, int clientFd, ChatroomToFdList &chatRooms);
 void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &clients, ChatroomToFdList &chatRooms);
 
 const int BUFFER_SIZE = 1024;

@@ -9,6 +9,6 @@ void privateChat(FdToName &clients,int currentClientFd, const string &msg, strin
   if (msgReceiver != clients.end()) {
     send(msgReceiver->first, msg.c_str(), msg.size(), 0);
   } else {
-    broadcast(clients, currentClientFd, msg);
+    // broadcast(clients, currentClientFd, msg);
   }
 }
