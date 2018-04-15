@@ -27,6 +27,7 @@ namespace cmd {
     QUIT,
     HELP,
     JOIN,
+    LEAVE,
     LIST_CHATROOMS,
     LIST_PEOPLE
   };

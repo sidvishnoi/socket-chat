@@ -80,8 +80,14 @@ int serverChat(int sockfd) {
               continue;
             }
 
+            case LEAVE: {
+              auto &chatRoomName = split(msg, DELIM, 2)[1];
+              cout << clients[currentClientFd] << " left #" << chatRoomName << endl;
+              leaveChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
+              continue;
+            }
+
             case LIST_CHATROOMS: {
-              // send list of chatrooms to newly connected client.
               auto response = getChatroomsList(chatRooms);
               send(currentClientFd, response.c_str(), response.size(), 0);
               continue;
@@ -92,10 +98,6 @@ int serverChat(int sockfd) {
               auto lst = getPeopleList(chatRoomName, clients, chatRooms);
               auto response = "INFO" + DELIM + "PEOPLE#" + chatRoomName + DELIM + "\n" + lst;
               send(currentClientFd, response.c_str(), response.size(), 0);
-              continue;
-            }
-
-            case LEAVE: {
               continue;
             }
 

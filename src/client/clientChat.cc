@@ -56,6 +56,13 @@ int clientChat(int sockfd, const std::string &username) {
           continue;
         }
 
+        case LEAVE: {
+          auto chatroom = split(msgToSend, " ", 2)[1].substr(1);
+          std::string request = DELIM + "LEAVE" + DELIM + chatroom;
+          send(sockfd, request.c_str(), request.size(), 0);
+          continue;
+        }
+
         case LIST_CHATROOMS: {
           std::string request = DELIM + "LIST_CHATROOMS";
           send(sockfd, request.c_str(), request.size(), 0);

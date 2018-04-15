@@ -15,6 +15,7 @@ cmd::Commands getCommandType(const std::string &msg) {
   if (tokens.size() < 2) return INVALID;
 
   if (tokens[0] == "/join" && tokens[1][0] == '#') return JOIN;
+  if (tokens[0] == "/leave" && tokens[1][0] == '#') return LEAVE;
   if (tokens[0] == "/list" && tokens[1] == "people") return LIST_PEOPLE;
   if (tokens[0] == "/list" && tokens[1] == "rooms") return LIST_CHATROOMS;
   return INVALID;

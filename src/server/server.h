@@ -56,6 +56,7 @@ std::string getPeerName(const int sockfd);
 void broadcast(const FdToName &names, const FdList &clients, const int currentClientFd, const string &msg);
 void privateChat(FdToName &clients, int currentClientFd, const string &msg, string clientName);
 void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &clients, ChatroomToFdList &chatRooms);
+void leaveChatRoom(const std::string chatRoomName, const int clientFd, const FdToName &names, ChatroomToFdList &chatRooms);
 
 const int BUFFER_SIZE = 1024;
 const string DELIM("$$$");
