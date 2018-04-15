@@ -1,10 +1,24 @@
 #include "./server.h"
 
-// send msg to all clients accept currentClientFD
-void broadcast(FdToName &clients, int currentClientFd, const string &msg) {
-  for (auto itr = clients.begin(); itr != clients.end(); ++itr) {
-    if (itr->first != currentClientFd && !clients[itr->first].empty()) {
-      send(itr->first, msg.c_str(), msg.size(), 0);
+// send msg to all clients except currentClientFD
+void broadcast(
+  const FdToName &names,
+  const FdList &clients,
+  const int currentClientFd,
+  const string &msg
+  ) {
+  auto shouldSend = [&names, currentClientFd](auto client) -> bool {
+    return client != currentClientFd
+      && names.count(client) != 0
+      && !names.at(client).empty();
+  };
+
+  auto message = msg.c_str();
+  auto len = msg.size();
+
+  for (auto client : clients) {
+    if (shouldSend(client)) {
+      send(client, message, len, 0);
     }
   }
 }
