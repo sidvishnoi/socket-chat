@@ -7,12 +7,12 @@ bool login(const int sockfd, const StrPair &credentials) {
 
   char buffer[BUFFER_SIZE] = {0};
   if (recv(sockfd, buffer, BUFFER_SIZE, 0) <= 0) {
-    return false;
+    throw std::runtime_error("Authentication failed.");
   }
 
   std::string response(buffer);
   if (response.find("INFO") == 0) return true;
 
   printMessage(response);
-  return false;
+  throw std::runtime_error("Authentication failed.");
 }

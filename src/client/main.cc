@@ -8,11 +8,10 @@ int main(int argc, char *argv[]) {
 	try {
 		const int sockfd = Socket();
 		Connect(sockfd, port);
-		if (!login(sockfd, credentials)) return 1;
+		login(sockfd, credentials);
 		clientChat(sockfd, credentials.first);
 		close(sockfd);
 	} catch (std::exception &e) {
-		cout << ALT_SCREEN_OFF;
 		cout << color::red << "ERROR: " << e.what() << color::reset << endl;
 		return errno;
 	}
