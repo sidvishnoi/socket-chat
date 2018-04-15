@@ -3,7 +3,7 @@
 int serverChat(int sockfd) {
   using namespace cmd;
   Database<User> db("./data/users/", "name");
-  int max = sockfd;
+  int maxfd = sockfd;
   char buffer[BUFFER_SIZE];
   FdToName clients;
   ChatroomToFdList chatRooms;
@@ -12,11 +12,11 @@ int serverChat(int sockfd) {
   while (true) {
     FD_ZERO(&master);
     FD_SET(sockfd, &master);
-    for (auto it = clients.begin(); it != clients.end(); ++it) {
-      FD_SET(it->first, &master);
-      if (it->first > max) max = it->first;
+    for (auto &p : clients) {
+      FD_SET(p.first, &master);
+      if (p.first > maxfd) maxfd = p.first;
     }
-    select(max+1, &master, NULL, NULL, NULL);
+    select(maxfd + 1, &master, NULL, NULL, NULL);
 
     if (FD_ISSET(sockfd, &master)) {
       const int newClient = Accept(sockfd);
