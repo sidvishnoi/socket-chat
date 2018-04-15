@@ -25,7 +25,18 @@ using std::string;
 using std::vector;
 using FdList = vector<int>;
 using FdToName = std::map<int, string>;
-using ChatRoomToFd = std::map<string, vector<int>>;
+using ChatroomToFdList = std::map<string, FdList>;
+
+namespace cmd {
+  enum Commands {
+    NOT_CMD,
+    INVALID,
+    JOIN,
+    LEAVE,
+    LIST_CHATROOMS,
+    LIST_PEOPLE
+  };
+}
 
 void printError();
 
@@ -38,12 +49,13 @@ string login(Database<User> &db, const string &uname, const string &pass);
 bool logout(Database<User> &db, const string &uname);
 
 int serverChat(int sockfd);
-std::string getChatroomsList(const ChatRoomToFd &chatRooms);
+cmd::Commands getMessageType(const std::string &);
+std::string getChatroomsList(const ChatroomToFdList &chatRooms);
 std::string getPeerName(const int sockfd);
 void broadcast(const FdToName &names, const FdList &clients, const int currentClientFd, const string &msg);
 void privateChat(FdToName &clients, int currentClientFd, const string &msg, string clientName);
-void switchChatRoom(string chatRoomName, int clientFd, ChatRoomToFd &chatRooms);
-void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &clients, ChatRoomToFd &chatRooms);
+void switchChatRoom(string chatRoomName, int clientFd, ChatroomToFdList &chatRooms);
+void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &clients, ChatroomToFdList &chatRooms);
 
 const int BUFFER_SIZE = 1024;
 const string DELIM("$$$");

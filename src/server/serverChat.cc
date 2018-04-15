@@ -1,11 +1,12 @@
 #include "./server.h"
 
 int serverChat(int sockfd) {
+  using namespace cmd;
   Database<User> db("./data/users/", "name");
   int max = sockfd;
   char buffer[BUFFER_SIZE];
   FdToName clients;
-  ChatRoomToFd chatRooms;
+  ChatroomToFdList chatRooms;
   fd_set master;
 
   while (true) {
@@ -35,18 +36,21 @@ int serverChat(int sockfd) {
         memset(buffer, 0, BUFFER_SIZE);
         const int bytesRead = recv(currentClientFd, buffer, sizeof(buffer), 0);
         cout << "BUFFER = " << buffer << endl;
-        if (bytesRead <= 0) {
-          // handle client connection lost
+        bool connectionLost = (bytesRead <= 0);
+        if (connectionLost) {
           FD_CLR(currentClientFd, &master);
           close(currentClientFd);
           string username(clients[currentClientFd]);
           logout(db, username);
           clients[currentClientFd] = "";
           string info = "INFO" + DELIM + username + DELIM + "went offline";
-          broadcast(clients, currentClientFd, info);
+          // TODO:
+          // 1. find groups in which client was,
+          // 2. broadcast to all those groups
+          // broadcast(clients, currentClientFd, info);
         } else if (clients[currentClientFd].empty()) {
           // login new client
-          vector<string> tokens = split(string(buffer), DELIM);
+          vector<string> tokens = split(string(buffer), DELIM, 2);
           string newClientName(tokens[0]);
           string password(tokens[1]);
           auto loginStatus = login(db, newClientName, password);
@@ -60,18 +64,46 @@ int serverChat(int sockfd) {
             continue;
           }
           clients[currentClientFd] = newClientName;
-          // send list of chatrooms to newly connected client.
-          // auto chatRoomsList = getChatroomsList(chatRooms);
-          // send(currentClientFd, chatRoomsList.c_str(), chatRoomsList.size(), 0);
-          // let other clients know of someone joining chatroom
-          string newClientOnlineMsg = "INFO" + DELIM + newClientName + DELIM +  + "is online";
-          broadcast(clients, currentClientFd, newClientOnlineMsg);
         } else {
+          // process messages
           string msg(buffer);
+          auto type = getMessageType(msg);
+          if (type == NOT_CMD) {
+            // TODO: send messages
+            cout << "message: " << msg << endl;
+          }
+          switch (type) {
+            case JOIN: {
+              auto &chatRoomName = split(msg, DELIM, 2)[1];
+              cout << clients[currentClientFd] << " requested to join " << chatRoomName << endl;
+              joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
+              continue;
+            }
+
+            case LIST_CHATROOMS: {
+              // send list of chatrooms to newly connected client.
+              auto response = getChatroomsList(chatRooms);
+              send(currentClientFd, response.c_str(), response.size(), 0);
+              continue;
+            }
+
+            case LIST_PEOPLE: {
+              continue;
+            }
+
+            case LEAVE: {
+              continue;
+            }
+
+            case INVALID:
+            default: continue;
+          }
+
+          continue;
+          // DO NOT READ BELOW. IT'S TEMPORARY AND WILL BE REFACTORED.
+
           unsigned int index = msg.find(' ');
-          cout << msg << endl;
-          if(++index == msg.size())
-            continue;
+          if(++index == msg.size()) continue;
           string msgToSend(msg.substr(index));
           cout << msgToSend << endl;
           auto posAt = find(msgToSend.begin(), msgToSend.end(), '@');
@@ -86,18 +118,13 @@ int serverChat(int sockfd) {
             joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
             continue;
           }
-          else if(msgToSend.find(".create#") == 0  && msgToSend.find(' ') == std::string::npos) {
-            string chatRoomName(msgToSend.substr(8));
-            createChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
-            continue;
-          }
           else if(msgToSend.find('#') == 0) {
               posAt = find(msgToSend.begin(), msgToSend.end(), '#');
               string chatRoomName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
-              broadcastToChatRoom(clients, chatRooms, chatRoomName, currentClientFd, msg);
+              // broadcast(clients, chatRooms, chatRoomName, currentClientFd, msg);
               continue;
           }
-          broadcast(clients, currentClientFd, temp);
+          // broadcast(clients, currentClientFd, temp);
         }
       }
     }
