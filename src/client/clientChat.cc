@@ -2,6 +2,7 @@
 
 int clientChat(int sockfd) {
   std::string name;
+  std::string chatRoom = "";
   while (true) {
     cout << "Enter your name: ";
     cin >> name;
@@ -19,7 +20,6 @@ int clientChat(int sockfd) {
   } else {
     cout << "MSG -> " << buffer << endl;
   }
-  cout << "Enter /q for exit" << endl;
 
   fd_set master;
   int maxfd = sockfd + 1;
@@ -45,6 +45,10 @@ int clientChat(int sockfd) {
         cout << "Connection closed!!\n";
         return 0;
       }
+      cout << chatRoom << " dsi" << endl;
+      msgToSend = "$" + chatRoom + " " + msgToSend;
+      //cout << msgToSend << endl;
+      //cout << msgToSend.size() << endl;
       send(sockfd, msgToSend.c_str(), msgToSend.size(), 0);
     }
 
