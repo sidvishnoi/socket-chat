@@ -1,3 +1,6 @@
+#ifndef SRC_CLIENT_CLIENT_H_
+#define SRC_CLIENT_CLIENT_H_
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -11,13 +14,18 @@
 #include <stdexcept>
 #include <cerrno>
 #include <string>
+#include <vector>
 
 using std::cout; using std::cin; using std::endl;
+using StrPair = std::pair<std::string, std::string>;
 
 int Socket();
 int Connect(int sockfd, int port);
-int clientChat(int sockfd);
+StrPair getCredentials();
+bool login(const int sockfd, const StrPair& credentials);
+int clientChat(int sockfd, const std::string &username);
 void msgPrompt(const std::string &name);
+void printMessage(const std::string &msg);
 
 namespace color {
   const std::string red("\033[0;31m");
@@ -28,5 +36,9 @@ namespace color {
   const std::string reset("\033[0m");
 }
 
-const int BUFFER_SIZE = 1024;
+std::vector<std::string> split(const std::string &str, const std::string &delim);
 
+const int BUFFER_SIZE = 1024;
+const std::string DELIM("$$$");
+
+#endif  // SRC_CLIENT_CLIENT_H_
