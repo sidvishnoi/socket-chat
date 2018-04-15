@@ -24,7 +24,7 @@ using std::cout; using std::cin; using std::endl;
 using std::string;
 using std::vector;
 using FdToName = std::map<int, string>;
-using ChatRoomToFd = std::map<string, std::vector<int>>;
+using ChatRoomToFd = std::map<string, vector<int>>;
 
 void printError();
 
@@ -37,14 +37,14 @@ string login(Database<User> &db, const string &uname, const string &pass);
 bool logout(Database<User> &db, const string &uname);
 
 int serverChat(int sockfd);
-void firstMsg(ChatRoomToFd &chatRooms, int currentClientFd);
+std::string getChatroomsList(const ChatRoomToFd &chatRooms);
 std::string getPeerName(const int sockfd);
 void broadcast(FdToName &clients, int currentClientFd, const string &msg);
 void broadcastToChatRoom(FdToName &clients,  ChatRoomToFd chatRooms, const string chatRoomName, int currentClientFd, const string &msg);
 void privateChat(FdToName &clients, int currentClientFd, const string &msg, string clientName);
 void switchChatRoom(string chatRoomName, int clientFd, ChatRoomToFd &chatRooms);
 void joinChatRoom(string chatRoomName, int clientFd, FdToName &clients, ChatRoomToFd &chatRooms);
-void createChatRoom(string chatRoomName, int clientFd, FdToName &clients, ChatRoomToFd &chatRooms); 
+void createChatRoom(string chatRoomName, int clientFd, FdToName &clients, ChatRoomToFd &chatRooms);
 
 const int BUFFER_SIZE = 1024;
 const string DELIM("$$$");

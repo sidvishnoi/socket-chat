@@ -60,9 +60,10 @@ int serverChat(int sockfd) {
             continue;
           }
           clients[currentClientFd] = newClientName;
-          broadcast(clients, currentClientFd, msg);
-          //sending information to newly connected client.
-          firstMsg(chatRooms, currentClientFd);
+          // send list of chatrooms to newly connected client.
+          // auto chatRoomsList = getChatroomsList(chatRooms);
+          // send(currentClientFd, chatRoomsList.c_str(), chatRoomsList.size(), 0);
+          // let other clients know of someone joining chatroom
           string newClientOnlineMsg = "INFO" + DELIM + newClientName + DELIM +  + "is online";
           broadcast(clients, currentClientFd, newClientOnlineMsg);
         } else {
@@ -73,7 +74,7 @@ int serverChat(int sockfd) {
             continue;
           string msgToSend(msg.substr(index));
           cout << msgToSend << endl;
-          auto  posAt = find(msgToSend.begin(), msgToSend.end(), '@');
+          auto posAt = find(msgToSend.begin(), msgToSend.end(), '@');
           string temp = clients[currentClientFd] + " > " + msgToSend;
           if (posAt == msgToSend.begin()) {
             string clientName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
@@ -82,7 +83,7 @@ int serverChat(int sockfd) {
           }
           else if(msgToSend.find(".join#") == 0 && msgToSend.find(' ') == std::string::npos) {
             string chatRoomName(msgToSend.substr(6));
-            joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms); 
+            joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
             continue;
           }
           else if(msgToSend.find(".create#") == 0  && msgToSend.find(' ') == std::string::npos) {
