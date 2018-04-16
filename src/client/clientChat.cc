@@ -58,6 +58,11 @@ int clientChat(int sockfd, const std::string &username) {
         }
         case JOIN: {
           auto chatroom = split(msgToSend, " ", 2)[1].substr(1);
+          if (activeChatrooms.count(chatroom) != 0) {
+            // if client has already joined the asked chatroom
+            activeChatroom = chatroom;
+            continue;
+          }
           std::string request = DELIM + "JOIN" + DELIM + chatroom;
           send(sockfd, request.c_str(), request.size(), 0);
           continue;
