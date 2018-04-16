@@ -9,5 +9,5 @@ void leaveChatRoom(const std::string chatRoomName, const int clientFd, const FdT
   send(clientFd, response.c_str(), response.size(), 0);
 
   std::string msg = "INFO" + DELIM + clientName + "#" + chatRoomName + DELIM + "left chatroom.";
-  broadcast(names, sendTo, clientFd, msg);
+  broadcast(sendTo, clientFd, msg);
 }

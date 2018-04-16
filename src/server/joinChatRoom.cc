@@ -22,6 +22,6 @@ void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &
   // let members of chatroom know of new user
   if (exists) {
     std::string msg = "INFO" + DELIM + names[clientFd] + DELIM + "joined " + chatRoomName;
-    broadcast(names, chatRooms.at(chatRoomName), clientFd, msg);
+    broadcast(chatRooms.at(chatRoomName), clientFd, msg);
   }
 }
