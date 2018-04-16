@@ -74,7 +74,7 @@ std::string getChatroomsList(const ChatroomToFdList &chatRooms);
 std::string getPeopleList(const std::string &chatRoomName, const FdToName &names, const ChatroomToFdList &chatRooms);
 
 // broadcast msg to all `clients` except currentClientFd (sender)
-void broadcast(const FdToName &names, const FdList &clients, const int currentClientFd, const string &msg);
+void broadcast(const FdList &clients, const int currentClientFd, const string &msg);
 
 // handle private messages
 void privateChat(FdToName &clients, int currentClientFd, const string &msg, string clientName);
