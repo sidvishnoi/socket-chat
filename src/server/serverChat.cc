@@ -71,8 +71,13 @@ int serverChat(int sockfd) {
         auto text = tokens[1];
         // TODO: send private messages
         if (chatRooms.count(chatRoomName) != 0) {
-          auto msgToSend = "MSG" + DELIM + clients[currentClientFd] + "#" + chatRoomName + DELIM + text;
-          broadcast(chatRooms.at(chatRoomName), currentClientFd, msgToSend);
+          if (chatRooms.at(chatRoomName).count(currentClientFd) != 0) {
+            auto msgToSend = "MSG" + DELIM + clients[currentClientFd] + "#" + chatRoomName + DELIM + text;
+            broadcast(chatRooms.at(chatRoomName), currentClientFd, msgToSend);
+          } else {
+            std::string errorMsg = "ERROR" + DELIM + "SERVER" + DELIM + "#" + chatRoomName + " must join chat-room first.";
+            send(currentClientFd, errorMsg.c_str(), errorMsg.size(), 0);
+          }
         } else {
           std::string errorMsg = "ERROR" + DELIM + "SERVER" + DELIM + "#" + chatRoomName + " doesn't exist.";
           send(currentClientFd, errorMsg.c_str(), errorMsg.size(), 0);
