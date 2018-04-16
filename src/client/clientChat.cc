@@ -112,6 +112,15 @@ int clientChat(int sockfd, const std::string &username) {
           allowMessages = true;
           activeChatroom = arg;
           activeChatrooms.insert(arg);
+        } else if (type == "LEAVE") {
+          printMessage("INFO" + DELIM + "#" + arg + DELIM + "you left.");
+          activeChatrooms.erase(arg);
+          if (activeChatrooms.size() == 0) {
+            activeChatroom = "";
+            allowMessages = false;
+          } else {
+            activeChatroom = *activeChatrooms.begin();
+          }
         }
         continue;
       }
