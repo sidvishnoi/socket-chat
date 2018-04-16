@@ -76,9 +76,7 @@ int serverChat(int sockfd) {
             auto index = text.find('@');
             
             if (index != string::npos) {
-              cout << index << + " "  << text.substr(index + 1).find(' ');
               std::string receiverName = text.substr(index + 1, text.substr(index + 1).find(' '));
-              cout << "RECEIVER : " << receiverName << endl;
               auto receiverItr = find_if(
                 clients.begin(),
                 clients.end(),
