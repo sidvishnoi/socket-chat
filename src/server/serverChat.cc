@@ -46,20 +46,17 @@ int serverChat(int sockfd) {
         close(currentClientFd);
         string username(clients[currentClientFd]);
         logout(db, username);
-        //clients[currentClientFd] = "";
         clients.erase(currentClientFd);
         string info = "INFO" + DELIM + username + DELIM + "went offline";
         cout << color::magenta << "[CLIENT:OFFLINE] " << color::reset
           << "<" << username << "> went offline" << endl;
         
         for (auto &room : chatRooms) {
-          
           auto members = room.second;
           auto receiverItr = members.find(currentClientFd);
-          
           if (receiverItr != members.end()) {
-            broadcast(members, currentClientFd, info);
             room.second.erase(currentClientFd);
+            broadcast(members, currentClientFd, info);
           }
         }
         continue;
