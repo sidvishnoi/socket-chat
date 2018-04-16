@@ -39,7 +39,14 @@ int clientChat(int sockfd, const std::string &username) {
           continue;
         }
         // not a command, send as message
-        send(sockfd, msgToSend.c_str(), msgToSend.size(), 0);
+        auto chatroom = activeChatroom;
+        if (msgToSend[0] == '#') {
+          auto pos = msgToSend.find(" ");
+          chatroom = msgToSend.substr(1, pos - 1);
+          msgToSend = msgToSend.substr(pos + 1);
+        }
+        std::string msg = chatroom + DELIM + msgToSend;
+        send(sockfd, msg.c_str(), msg.size(), 0);
         continue;
       }
 
