@@ -73,6 +73,24 @@ int serverChat(int sockfd) {
         if (chatRooms.count(chatRoomName) != 0) {
           if (chatRooms.at(chatRoomName).count(currentClientFd) != 0) {
             auto msgToSend = "MSG" + DELIM + clients[currentClientFd] + "#" + chatRoomName + DELIM + text;
+            auto index = text.find('@');
+            
+            if (index != string::npos) {
+              cout << index << + " "  << text.substr(index + 1).find(' ');
+              std::string receiverName = text.substr(index + 1, text.substr(index + 1).find(' '));
+              cout << "RECEIVER : " << receiverName << endl;
+              auto receiverItr = find_if(
+                clients.begin(),
+                clients.end(),
+                [&receiverName](auto const &itr) -> bool {
+                  return itr.second == receiverName;
+                }
+              );
+              if (receiverItr != clients.end() && chatRooms.at(chatRoomName).count(receiverItr->first) != 0) {
+                send(receiverItr->first, msgToSend.c_str(), msgToSend.size(), 0);
+                continue;
+              }
+            }
             broadcast(chatRooms.at(chatRoomName), currentClientFd, msgToSend);
           } else {
             std::string errorMsg = "ERROR" + DELIM + "SERVER" + DELIM + "#" + chatRoomName + " must join chat-room first.";
