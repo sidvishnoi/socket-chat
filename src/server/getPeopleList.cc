@@ -5,7 +5,7 @@ std::string getPeopleList(const std::string &chatRoomName, const FdToName &names
   std::string response;
   for (auto fd : peopleInRoom) {
     if (names.count(fd) != 0 && !names.at(fd).empty()) {
-      response += names.at(fd) + " <" + getPeerName(fd) + ">" +  "\n";
+      response += "\n" + names.at(fd) + " <" + getPeerName(fd) + ">";
     }
   }
   return response;

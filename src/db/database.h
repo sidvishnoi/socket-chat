@@ -73,8 +73,8 @@ template <class T>
 bool Database<T>::createBucket(const std::string &bucketName) {
   std::ifstream fl(bucketName);
   if (fl) return false;   // not created
-  const std::string cmd = "touch " + bucketName;
-  return !system(cmd.c_str());
+  std::ofstream fout(bucketName);
+  return true;
 }
 
 template <class T>

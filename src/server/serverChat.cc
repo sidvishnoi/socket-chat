@@ -134,7 +134,7 @@ int serverChat(int sockfd) {
         case LIST_PEOPLE: {
           auto &chatRoomName = split(msg, DELIM, 2)[1];
           auto lst = getPeopleList(chatRoomName, clients, chatRooms);
-          auto response = "INFO" + DELIM + "PEOPLE#" + chatRoomName + DELIM + "\n" + lst;
+          auto response = "INFO" + DELIM + "PEOPLE#" + chatRoomName + DELIM + lst;
           send(currentClientFd, response.c_str(), response.size(), 0);
           continue;
         }
@@ -142,33 +142,6 @@ int serverChat(int sockfd) {
         case INVALID:
         default: continue;
       }
-
-      continue;
-      // DO NOT READ BELOW. IT'S TEMPORARY AND WILL BE REFACTORED.
-
-      unsigned int index = msg.find(' ');
-      if(++index == msg.size()) continue;
-      string msgToSend(msg.substr(index));
-      cout << msgToSend << endl;
-      auto posAt = find(msgToSend.begin(), msgToSend.end(), '@');
-      string temp = clients[currentClientFd] + " > " + msgToSend;
-      if (posAt == msgToSend.begin()) {
-        string clientName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
-        privateChat(clients, currentClientFd, temp, clientName);
-        continue;
-      }
-      else if(msgToSend.find(".join#") == 0 && msgToSend.find(' ') == std::string::npos) {
-        string chatRoomName(msgToSend.substr(6));
-        joinChatRoom(chatRoomName, currentClientFd, clients, chatRooms);
-        continue;
-      }
-      else if(msgToSend.find('#') == 0) {
-          posAt = find(msgToSend.begin(), msgToSend.end(), '#');
-          string chatRoomName(++posAt, std::find(msgToSend.begin(), msgToSend.end(), ' '));
-          // broadcast(clients, chatRooms, chatRoomName, currentClientFd, msg);
-          continue;
-      }
-      // broadcast(clients, currentClientFd, temp);
     } // end:range-for-clients
   }  // end:while
   return 0;
