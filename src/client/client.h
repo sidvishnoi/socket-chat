@@ -37,7 +37,7 @@ namespace cmd {
 }
 
 int Socket();
-int Connect(int sockfd, int port);
+int Connect(int sockfd, const std::string &host, int port);
 StrPair getCredentials();
 bool login(const int sockfd, const StrPair& credentials);
 int clientChat(int sockfd, const std::string &username);
