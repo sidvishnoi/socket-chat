@@ -7,7 +7,7 @@
 // putting this here compiler shouts "can't put static of Keys in class"
 namespace _User {
   const Entry::Keys _keys = {"name", "password", "status"};
-  const size_t _sz = 128;
+  const size_t _sz = 64;
 }
 
 class User : public Entry {
