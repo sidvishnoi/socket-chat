@@ -6,11 +6,10 @@ void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &
     chatRooms.end(),
     [&chatRoomName](auto const &itr) -> bool {
       return itr.first == chatRoomName;
-    }
-  );
+    });
 
   bool exists = chatRoomItr != chatRooms.end();
-  if(!exists) {
+  if (!exists) {
     chatRooms[chatRoomName] = FdList{clientFd};
   } else {
     chatRooms[chatRoomName].insert(clientFd);
@@ -21,7 +20,8 @@ void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &
 
   // let members of chatroom know of new user
   if (exists) {
-    std::string msg = "INFO" + DELIM + names[clientFd] + DELIM + "joined " + chatRoomName;
+    string msg = "INFO" + DELIM + names[clientFd] + DELIM +
+      "joined " + chatRoomName;
     broadcast(chatRooms.at(chatRoomName), clientFd, msg);
   }
 }

@@ -6,7 +6,6 @@ void broadcast(
   const int currentClientFd,
   const string &msg
   ) {
- 
   auto message = msg.c_str();
   auto len = msg.size();
 

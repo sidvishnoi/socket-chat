@@ -10,6 +10,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <cerrno>
+#include <string>
 #include <map>
 #include <vector>
 #include <set>
@@ -53,16 +54,22 @@ int Accept(int sockfd);
 void printError();
 
 // login a user
-string login(Database<User> &db, const string &uname, const string &pass);
+string login(const Database<User> &db, const string &uname, const string &pass);
 
 // logout a user
-bool logout(Database<User> &db, const string &uname);
+bool logout(const Database<User> &db, const string &uname);
 
 // main chat function
 int serverChat(int sockfd);
 
 // add a client to chat system (with login)
-bool addClient(const int currentClientFd, fd_set *master, const std::string &credentials, Database<User> &db, FdToName &names);
+bool addClient(
+  const int currentClientFd,
+  fd_set *master,
+  const std::string &credentials,
+  const Database<User> &db,
+  FdToName &names
+);
 
 // get the msg type - regular msg or some command
 cmd::Commands getMessageType(const std::string &);
@@ -71,25 +78,62 @@ cmd::Commands getMessageType(const std::string &);
 std::string getChatroomsList(const ChatroomToFdList &chatRooms);
 
 // response for `/list people`
-std::string getPeopleList(const std::string &chatRoomName, const FdToName &names, const ChatroomToFdList &chatRooms);
+std::string getPeopleList(
+  const std::string &chatRoomName,
+  const FdToName &names,
+  const ChatroomToFdList &chatRooms
+);
 
 // broadcast msg to all `clients` except currentClientFd (sender)
-void broadcast(const FdList &clients, const int currentClientFd, const string &msg);
+void broadcast(
+  const FdList &clients,
+  const int currentClientFd,
+  const string &msg
+);
 
 // handle private messages
-void privateChat(FdToName &clients, int currentClientFd, const string &msg, string clientName);
+void privateChat(
+  const FdToName &clients,
+  int currentClientFd,
+  const string &msg,
+  string clientName
+);
 
 // add a user to a chatroom `/join #chatroom`
-void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &clients, ChatroomToFdList &chatRooms);
+void joinChatRoom(
+  const std::string chatRoomName,
+  const int clientFd,
+  FdToName &clients,
+  ChatroomToFdList &chatRooms
+);
 
 // remove a user from a chatroom `/leave #chatroom`
-void leaveChatRoom(const std::string chatRoomName, const int clientFd, const FdToName &names, ChatroomToFdList &chatRooms);
+void leaveChatRoom(
+  const std::string chatRoomName,
+  const int clientFd,
+  const FdToName &names,
+  ChatroomToFdList &chatRooms
+);
 
-//handle lost connection request : Remove connection from active connections and Notify chatroom mates.
-void handleLostConnection(const int currentClientFd, ChatroomToFdList &chatRooms, FdToName &clients, fd_set &master, Database<User> &db);
+// handle lost connection request
+// - Remove connection from active connections
+// - Notify chatroom mates.
+void handleLostConnection(
+  const int currentClientFd,
+  ChatroomToFdList &chatRooms,
+  FdToName &clients,
+  fd_set &master,
+  Database<User> &db
+);
 
-// handle incomming msg : if private send it to the particular client else broadcast it to chatroom.
-void handleMsg(const int currentClientFd, ChatroomToFdList &chatRooms, FdToName &clients, string msg);
+// handle incomming msg :
+//  if private send it to the particular client else broadcast it to chatroom.
+void handleMsg(
+  const int currentClientFd,
+  const ChatroomToFdList &chatRooms,
+  const FdToName &clients,
+  string msg
+);
 
 // get the `ip:port` for a given client
 std::string getPeerName(const int sockfd);

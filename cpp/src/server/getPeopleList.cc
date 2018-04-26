@@ -1,6 +1,10 @@
 #include "./server.h"
 
-std::string getPeopleList(const std::string &chatRoomName, const FdToName &names, const ChatroomToFdList &chatRooms) {
+std::string getPeopleList(
+  const std::string &chatRoomName,
+  const FdToName &names,
+  const ChatroomToFdList &chatRooms
+) {
   FdList peopleInRoom = chatRooms.at(chatRoomName);
   std::string response;
   for (auto fd : peopleInRoom) {

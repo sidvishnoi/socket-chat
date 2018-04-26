@@ -4,7 +4,7 @@ bool addClient(
   const int currentClientFd,
   fd_set *master,
   const std::string &credentials,
-  Database<User> &db,
+  const Database<User> &db,
   FdToName &names
   ) {
   vector<string> tokens = split(credentials, DELIM, 2);

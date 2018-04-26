@@ -1,7 +1,6 @@
 #include "./server.h"
 
 int serverChat(int sockfd) {
-  using namespace cmd;
   Database<User> db("./data/users/", "name");
   int maxfd = sockfd;
   char buffer[BUFFER_SIZE];
@@ -38,7 +37,6 @@ int serverChat(int sockfd) {
 
       std::fill_n(buffer, BUFFER_SIZE, '\0');
       const int bytesRead = recv(currentClientFd, buffer, sizeof(buffer), 0);
-      cout << "BUFFER = " << buffer << endl;
 
       bool connectionLost = (bytesRead <= 0);
       if (connectionLost) {
@@ -54,14 +52,14 @@ int serverChat(int sockfd) {
       // process messages
       string msg(buffer);
       auto type = getMessageType(msg);
-      if (type == NOT_CMD) {
+      if (type == cmd::NOT_CMD) {
         handleMsg(currentClientFd, chatRooms, clients, msg);
         continue;
       }
 
       switch (type) {
-        case JOIN: {
-          auto &chatRoomName = split(msg, DELIM, 2)[1];
+        case cmd::JOIN: {
+          auto chatRoomName = split(msg, DELIM, 2)[1];
           cout << color::green << "[CLIENT:JOIN] " << color::reset
             << "<" << clients[currentClientFd] << "> requested to join #"
             << chatRoomName << endl;
@@ -69,8 +67,8 @@ int serverChat(int sockfd) {
           continue;
         }
 
-        case LEAVE: {
-          auto &chatRoomName = split(msg, DELIM, 2)[1];
+        case cmd::LEAVE: {
+          auto chatRoomName = split(msg, DELIM, 2)[1];
           cout << color::green << "[CLIENT:LEAVE] " << color::reset
             << "<" << clients[currentClientFd] << "> left #"
             << chatRoomName << endl;
@@ -78,24 +76,25 @@ int serverChat(int sockfd) {
           continue;
         }
 
-        case LIST_CHATROOMS: {
+        case cmd::LIST_CHATROOMS: {
           auto response = getChatroomsList(chatRooms);
           send(currentClientFd, response.c_str(), response.size(), 0);
           continue;
         }
 
-        case LIST_PEOPLE: {
+        case cmd::LIST_PEOPLE: {
           auto chatRoomName = split(msg, DELIM, 2)[1];
           auto lst = getPeopleList(chatRoomName, clients, chatRooms);
-          auto response = "INFO" + DELIM + "PEOPLE#" + chatRoomName + DELIM + lst;
+          auto response = "INFO" + DELIM +
+            "PEOPLE#" + chatRoomName + DELIM + lst;
           send(currentClientFd, response.c_str(), response.size(), 0);
           continue;
         }
 
-        case INVALID:
+        case cmd::INVALID:
         default: continue;
       }
-    } // end:range-for-clients
-  }  // end:while
+    }   // end:range-for-clients
+  }   // end:while
   return 0;
 }

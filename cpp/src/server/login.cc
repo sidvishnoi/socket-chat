@@ -1,6 +1,10 @@
 #include "./server.h"
 
-std::string login(Database<User> &db, const string &uname, const string &pass) {
+std::string login(
+  const Database<User> &db,
+  const string &uname,
+  const string &pass
+) {
   auto record = db.get(uname).first;
   auto user = record.get();
 

@@ -1,7 +1,6 @@
 #include "./client.h"
 
 int clientChat(int sockfd, const std::string &username) {
-  using namespace cmd;
   char buffer[BUFFER_SIZE] = {0};
   fd_set master;
   int maxfd = sockfd + 1;
@@ -26,16 +25,18 @@ int clientChat(int sockfd, const std::string &username) {
     if (FD_ISSET(STDIN_FILENO, &master)) {
       std::string msgToSend;
       getline(cin, msgToSend);
-      if (cin.fail() || cin.eof() || msgToSend == "/q") {
+      if (cin.fail() || cin.eof()) {
         cout << "Connection closed!!\n";
         return 0;
       }
       if (msgToSend.empty()) continue;
 
       auto cmdType = getCommandType(msgToSend);
-      if (cmdType == NOT_CMD) {
+      if (cmdType == cmd::NOT_CMD) {
         if (!allowMessages) {
-          printMessage("ERROR" + DELIM + "JOIN" + DELIM + "You must join a chatroom first.");
+          printMessage(
+            "ERROR" + DELIM + "JOIN" + DELIM +
+            "You must join a chatroom first.");
           continue;
         }
         // not a command, send as message
@@ -51,12 +52,12 @@ int clientChat(int sockfd, const std::string &username) {
       }
 
       switch (cmdType) {
-        case QUIT: return 0;
-        case HELP: {
+        case cmd::QUIT: return 0;
+        case cmd::HELP: {
           printHelpMessage();
           continue;
         }
-        case JOIN: {
+        case cmd::JOIN: {
           auto chatroom = split(msgToSend, " ", 2)[1].substr(1);
           if (activeChatrooms.count(chatroom) != 0) {
             // if client has already joined the asked chatroom
@@ -68,22 +69,24 @@ int clientChat(int sockfd, const std::string &username) {
           continue;
         }
 
-        case LEAVE: {
+        case cmd::LEAVE: {
           auto chatroom = split(msgToSend, " ", 2)[1].substr(1);
           std::string request = DELIM + "LEAVE" + DELIM + chatroom;
           send(sockfd, request.c_str(), request.size(), 0);
           continue;
         }
 
-        case LIST_CHATROOMS: {
+        case cmd::LIST_CHATROOMS: {
           std::string request = DELIM + "LIST_CHATROOMS";
           send(sockfd, request.c_str(), request.size(), 0);
           continue;
         }
 
-        case LIST_PEOPLE: {
+        case cmd::LIST_PEOPLE: {
           if (!allowMessages) {
-            printMessage("ERROR" + DELIM + "JOIN" + DELIM + "You must join a chatroom first.");
+            printMessage(
+              "ERROR" + DELIM + "JOIN" + DELIM +
+              "You must join a chatroom first.");
             continue;
           }
           std::string request = DELIM + "LIST_PEOPLE" + DELIM + activeChatroom;
@@ -91,7 +94,7 @@ int clientChat(int sockfd, const std::string &username) {
           continue;
         }
 
-        case INVALID:
+        case cmd::INVALID:
         default:
           printMessage("ERROR" + DELIM + "CMD" + DELIM + "Invalid command.");
       }

@@ -21,6 +21,7 @@ void printHelpMessage() {
     << "switch/join/create a chat room." << endl;
   cout  << color::yellow << "#chatroomName YOUR MESSAGE"
     << color::magenta << "\n  ➜ " << color::reset
-    << "send message to particular chatroom. You can use @person along with this." << endl;
+    << "send message to particular chatroom. "
+    << "You can use @person along with this." << endl;
   cout << endl;
 }

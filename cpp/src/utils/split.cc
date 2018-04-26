@@ -1,7 +1,11 @@
 #include <vector>
 #include <string>
 
-std::vector<std::string> split(const std::string &str, const std::string &delim, const int limit) {
+std::vector<std::string> split(
+  const std::string &str,
+  const std::string &delim,
+  const int limit
+) {
   using std::vector; using std::string;
   vector<string> tokens;
   size_t prev = 0, pos = 0;

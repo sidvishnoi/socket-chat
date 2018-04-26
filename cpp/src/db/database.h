@@ -12,24 +12,24 @@ class Database {
   Database(
     const std::string &dir,
     const std::string &_pk,
-    std::pair<int, int> _bucketHash = {0, 2}
-  ) : pk(_pk), dbDir(dir), bucketHash(_bucketHash) {
+    std::pair<int, int> _bucketHash = {0, 2})
+      : pk(_pk), dbDir(dir), bucketHash(_bucketHash) {
     if (dbDir.back() != '/') dbDir.append("/");
     createDbDir();
   }
 
   // append an entry of class T (specializes Entry) to database
-  int add(const T &);
+  int add(const T &) const;
 
   // get an entry where primary key value is value
   // uses linear search
-  std::pair<T, int> get(const std::string &value);
+  std::pair<T, int> get(const std::string &value) const;
 
   // update an entry in database
-  bool update(const T &oldEntry, const T &newEntry);
+  bool update(const T &oldEntry, const T &newEntry) const;
 
   // mark an entry as "deleted"
-  bool remove(const T & entry);
+  bool remove(const T & entry) const;
 
  private:
   // primary key
@@ -42,12 +42,12 @@ class Database {
   std::pair<int, int> bucketHash;
 
   // get name of bucket for a pk value using bucketHash
-  std::string getBucketName(const std::string &pkValue) {
+  std::string getBucketName(const std::string &pkValue) const {
     return dbDir + pkValue.substr(bucketHash.first, bucketHash.second) + ".txt";
   }
 
   // create a bucket if not exists
-  bool createBucket(const std::string &bucketName);
+  bool createBucket(const std::string &bucketName) const;
 
   // get number of records in a bucket
   int getNumberOfRecords(std::fstream &bucket, const T &entry);
@@ -70,7 +70,7 @@ void Database<T>::createDbDir() {
 }
 
 template <class T>
-bool Database<T>::createBucket(const std::string &bucketName) {
+bool Database<T>::createBucket(const std::string &bucketName) const {
   std::ifstream fl(bucketName);
   if (fl) return false;   // not created
   std::ofstream fout(bucketName);
@@ -86,17 +86,18 @@ int Database<T>::getNumberOfRecords(std::fstream &bucket, const T& entry) {
 }
 
 template <class T>
-int Database<T>::add(const T &entry) {
+int Database<T>::add(const T &entry) const {
   std::pair<T, int> old = get(entry.get(pk));
   if (old.second != -1) return 1;
   const std::string bucketName = getBucketName(entry.get(pk));
+  createBucket(bucketName);
   std::ofstream bucket(bucketName, std::ios::app | std::ios::binary);
   bucket << entry.serialize() + "\n";
   return 0;
 }
 
 template <class T>
-std::pair<T, int> Database<T>::get(const std::string &value) {
+std::pair<T, int> Database<T>::get(const std::string &value) const {
   std::string record;
   std::ifstream bucket(getBucketName(value), std::ios::binary);
   while (std::getline(bucket, record) && !record.empty()) {
@@ -109,8 +110,9 @@ std::pair<T, int> Database<T>::get(const std::string &value) {
 }
 
 template <class T>
-bool Database<T>::update(const T &oldEntry, const T &newEntry) {
-  using namespace std;
+bool Database<T>::update(const T &oldEntry, const T &newEntry) const {
+  using std::pair;
+  using std::ofstream;
 
   pair<T, int> old = get(oldEntry.get(pk));
 
@@ -123,8 +125,8 @@ bool Database<T>::update(const T &oldEntry, const T &newEntry) {
 
   ofstream bucket(
     getBucketName(oldEntry.get(pk)),
-    ios::in | ios::out | ios::binary);
-  int offset = old.second - oldEntry.size() - 1;
+    std::ios::in | std::ios::out | std::ios::binary);
+  auto offset = old.second - oldEntry.size() - 1;
   bucket.seekp(offset);
   bucket << newEntry.serialize() + "\n";
   return true;
