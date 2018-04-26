@@ -17,8 +17,8 @@ void handleLostConnection(const int currentClientFd,
   
   for (auto &room : chatRooms) {
     auto members = room.second;
-    auto receiverItr = members.find(currentClientFd);
-    if (receiverItr != members.end()) {
+    //Check if current list is the member of the chatroom.
+    if (members.find(currentClientFd) != members.end()) {
       room.second.erase(currentClientFd);
       broadcast(members, currentClientFd, info);
     }

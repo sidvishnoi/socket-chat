@@ -18,6 +18,7 @@ void handleMsg(const int currentClientFd, ChatroomToFdList &chatRooms, FdToName 
             return itr.second == receiverName;
           }
         );
+        //Send msg to the receiver if it exist in the chatroom.
         if (receiverItr != clients.end() && chatRooms.at(chatRoomName).count(receiverItr->first) != 0) {
           send(receiverItr->first, msgToSend.c_str(), msgToSend.size(), 0);
           return;
