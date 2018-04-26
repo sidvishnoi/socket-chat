@@ -85,6 +85,12 @@ void joinChatRoom(const std::string chatRoomName, const int clientFd, FdToName &
 // remove a user from a chatroom `/leave #chatroom`
 void leaveChatRoom(const std::string chatRoomName, const int clientFd, const FdToName &names, ChatroomToFdList &chatRooms);
 
+//handle lost connection request : Remove connection from active connections and Notify chatroom mates.
+void handleLostConnection(const int currentClientFd, ChatroomToFdList &chatRooms, FdToName &clients, fd_set &master, Database<User> &db);
+
+// handle incomming msg : if private send it to the particular client else broadcast it to chatroom.
+void handleMsg(const int currentClientFd, ChatroomToFdList &chatRooms, FdToName &clients, string msg);
+
 // get the `ip:port` for a given client
 std::string getPeerName(const int sockfd);
 
