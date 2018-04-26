@@ -42,23 +42,7 @@ int serverChat(int sockfd) {
 
       bool connectionLost = (bytesRead <= 0);
       if (connectionLost) {
-        FD_CLR(currentClientFd, &master);
-        close(currentClientFd);
-        string username(clients[currentClientFd]);
-        logout(db, username);
-        clients.erase(currentClientFd);
-        string info = "INFO" + DELIM + username + DELIM + "went offline";
-        cout << color::magenta << "[CLIENT:OFFLINE] " << color::reset
-          << "<" << username << "> went offline" << endl;
-        
-        for (auto &room : chatRooms) {
-          auto members = room.second;
-          auto receiverItr = members.find(currentClientFd);
-          if (receiverItr != members.end()) {
-            room.second.erase(currentClientFd);
-            broadcast(members, currentClientFd, info);
-          }
-        }
+        handleLostConnection(currentClientFd, chatRooms, clients, master, db);
         continue;
       }
 
