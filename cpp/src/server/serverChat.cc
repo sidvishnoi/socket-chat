@@ -1,14 +1,13 @@
 #include "./server.h"
 
 int serverChat(int sockfd) {
-  bool personalMsg = false;
-  string receiver = "";
   Database<User> db("./data/users/", "name");
   int maxfd = sockfd;
   char buffer[BUFFER_SIZE];
   FdToName clients;
   ChatroomToFdList chatRooms;
   fd_set master;
+  std::pair <bool, string> receiverDetail (false, ""); 
 
   while (true) {
     FD_ZERO(&master);
@@ -56,7 +55,7 @@ int serverChat(int sockfd) {
       string msg(buffer);
       auto type = getMessageType(msg);
       if (type == cmd::NOT_CMD) {
-        handleMsg(currentClientFd, chatRooms, clients, msg, personalMsg, receiver);
+        handleMsg(currentClientFd, chatRooms, clients, msg, receiverDetail);
         continue;
       }
 

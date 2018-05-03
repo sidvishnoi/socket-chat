@@ -76,7 +76,7 @@ int clientChat(int sockfd, const std::string &username) {
           if (index != std::string::npos) {
             printMessage(
               "ERROR" + DELIM + "SYNTAX" + DELIM +
-              "Cann't use @ symbol in chatroom name");
+              "Can't use @ symbol in chatroom name");
             continue;  
           }
           if (activeChatrooms.count(chatroom) != 0) {

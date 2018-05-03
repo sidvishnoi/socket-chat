@@ -5,23 +5,23 @@ void handleMsg(
   const ChatroomToFdList &chatRooms,
   const FdToName &clients,
   string msg,
-  bool &personalMsg,
-  string &receiver
+  std::pair <bool, string> &receiverDetail
 ) {
   auto tokens = split(msg, DELIM, 2);
   // If complete msg is not received in one recv call
   if(tokens.size() != 2) {
-    if (personalMsg) {
+    // Personal msg
+    if (receiverDetail.first) {
       auto receiverItr = find_if(
         clients.begin(),
         clients.end(),
-        [&receiver](auto const &itr) -> bool {
-          return itr.second == receiver;
+        [&receiverDetail](auto const &itr) -> bool {
+          return itr.second == receiverDetail.second;
         });
       send(receiverItr->first, msg.c_str(), msg.size(), 0);
     }
     else {
-      broadcast(chatRooms.at(receiver), currentClientFd, msg);
+      broadcast(chatRooms.at(receiverDetail.second), currentClientFd, msg);
     }
     return;
   }
@@ -57,17 +57,18 @@ void handleMsg(
         // Send msg to the receiver if it exist in the chatroom.
         if (receiverItr != clients.end()
           && chatRooms.at(chatRoomName).count(receiverItr->first) != 0) {
-          personalMsg = true;
-          receiver = receiverName;
+          receiverDetail.first = true;
+          receiverDetail.second = receiverName;
           send(receiverItr->first, msgToSend.c_str(), msgToSend.size(), 0);
           return;
         }
       }
       // If not private msg, broadcast it to the chatroom.
-      personalMsg = false;
-      receiver = chatRoomName;
+      receiverDetail.first = false;
+      receiverDetail.second = chatRoomName;
       broadcast(chatRooms.at(chatRoomName), currentClientFd, msgToSend);
-    } else {
+    }
+    else {
       string errorMsg = "ERROR" + DELIM + "SERVER" + DELIM +
         "#" + chatRoomName + " must join chat-room first.";
       send(currentClientFd, errorMsg.c_str(), errorMsg.size(), 0);
