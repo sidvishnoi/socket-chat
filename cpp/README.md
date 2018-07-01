@@ -14,7 +14,8 @@
 
 ## Video Demo:
 
-*video coming soon*
+[![Video demo on YouTube](https://user-images.githubusercontent.com/8426945/42136552-58b57012-7d7b-11e8-9d37-d8cecc93a0f3.png)](https://www.youtube.com/watch?v=ghpnpZ5GKbk)
+https://www.youtube.com/watch?v=ghpnpZ5GKbk
 
 ## [Contributors](https://github.com/sidvishnoi/socket-chat/graphs/contributors):
 
