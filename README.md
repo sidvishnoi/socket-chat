@@ -1,6 +1,6 @@
 # Chat server and client with CLI using UNIX networking sockets
 
-![Preview of C++ version](https://user-images.githubusercontent.com/8426945/42136552-58b57012-7d7b-11e8-9d37-d8cecc93a0f3.png)
+[![Preview of C++ version](https://user-images.githubusercontent.com/8426945/42136552-58b57012-7d7b-11e8-9d37-d8cecc93a0f3.png)](https://github.com/sidvishnoi/socket-chat/tree/master/cpp)
 
 (Done as a part of extended class assignments)
 
